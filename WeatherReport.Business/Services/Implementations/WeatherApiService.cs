@@ -18,7 +18,7 @@ public class WeatherApiService : IWeatherApiService
         _apiSettings = apiSettings.Value;
     }
 
-    public async Task<IEnumerable<ReportDTO>> GetCurrentWeatherDataAsync(string cityName)
+    public async Task<ReportDTO> GetCurrentWeatherDataAsync(string cityName)
     {
         var requestUri = $"{_apiSettings.WeatherApiBaseUrl}{_apiSettings.ApiModeCurrent}?q={cityName}&appid={_apiSettings.ApiKey}&units={_apiSettings.Units}";
         var response = await _httpClient.GetAsync(requestUri);
@@ -27,18 +27,11 @@ public class WeatherApiService : IWeatherApiService
         var content = await response.Content.ReadAsStringAsync();
         var weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(content);
 
-        List<ReportDTO> reports = [];
-        foreach(var weather in weatherResponse.Weather)
+        return new ReportDTO
         {
-            var report = new ReportDTO
-            {
-                Description = weather.Description,
-                Icon = weather.Icon
-            };
-            reports.Add(report);
-        }
-
-        return reports;
+            Descriptions = weatherResponse.Weather.Select(w => w.Description),
+            Icons = weatherResponse.Weather.Select(w => w.Icon)
+        };
     }
     public async Task<IEnumerable<WeeklyReportDTO>> GetForWeekWeatherDataAsync(string cityName)
     {
@@ -84,11 +77,16 @@ public class WeatherApiService : IWeatherApiService
                 .Select(w => w.Description)
                 .Distinct(); // Optionally, remove duplicate descriptions
 
+            var icons = group.SelectMany(f => f.Weather)
+                .Select(w => w.Icon)
+                .Distinct();
+
             var report = new WeeklyReportDTO
             {
                 DayOfWeek = dayOfWeek,
                 PartOfDay = partOfDay,
-                Descriptions = descriptions
+                Descriptions = descriptions,
+                Icons = icons
             };
 
             reports.Add(report);

@@ -13,3 +13,4 @@
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/refint/WeatherReport.Business.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.pdb
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/ref/WeatherReport.Business.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.sourcelink.json

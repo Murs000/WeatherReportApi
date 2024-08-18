@@ -6,5 +6,6 @@ public class WeeklyReportDTO
     public string DayOfWeek { get; set; }
     public string PartOfDay { get; set; }
     public IEnumerable<string> Descriptions { get; set; }
+    public IEnumerable<string> Icons { get; set; }
     
 }
