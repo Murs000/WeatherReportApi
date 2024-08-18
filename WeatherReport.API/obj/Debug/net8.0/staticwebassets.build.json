@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "XLKyDhfDv+ruGBmsciNyyEA2DvSdbQv0Vbo/pQRGzMQ=",
+  "Source": "WeatherReport.API",
+  "BasePath": "_content/WeatherReport.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

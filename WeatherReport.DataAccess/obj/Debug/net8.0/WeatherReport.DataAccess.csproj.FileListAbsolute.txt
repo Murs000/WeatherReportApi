@@ -1,0 +1,12 @@
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/bin/Debug/net8.0/WeatherReport.DataAccess.deps.json
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/bin/Debug/net8.0/WeatherReport.DataAccess.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/bin/Debug/net8.0/WeatherReport.DataAccess.pdb
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.AssemblyInfoInputs.cache
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.AssemblyInfo.cs
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.csproj.CoreCompileInputs.cache
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/refint/WeatherReport.DataAccess.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.pdb
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/ref/WeatherReport.DataAccess.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.csproj.AssemblyReference.cache

@@ -1,0 +1,15 @@
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/bin/Debug/net8.0/WeatherReport.Business.deps.json
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/bin/Debug/net8.0/WeatherReport.Business.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/bin/Debug/net8.0/WeatherReport.Business.pdb
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/bin/Debug/net8.0/WeatherReport.DataAccess.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/bin/Debug/net8.0/WeatherReport.DataAccess.pdb
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.csproj.AssemblyReference.cache
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.GeneratedMSBuildEditorConfig.editorconfig
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.AssemblyInfoInputs.cache
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.AssemblyInfo.cs
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.csproj.CoreCompileInputs.cache
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherR.21C0522C.Up2Date
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/refint/WeatherReport.Business.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/WeatherReport.Business.pdb
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.Business/obj/Debug/net8.0/ref/WeatherReport.Business.dll
