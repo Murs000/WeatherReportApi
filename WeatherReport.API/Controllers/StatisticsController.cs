@@ -7,7 +7,7 @@ namespace WeatherReport.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StaticticsController(ISubscriberService subscriberService) : ControllerBase
+public class StaticticsController(ISubscriberService subscriberService,IReportService reportService) : ControllerBase
 {
     [HttpGet("City")]
     public async Task<IActionResult> GetCityPercentageAsync()
@@ -26,6 +26,14 @@ public class StaticticsController(ISubscriberService subscriberService) : Contro
     [HttpGet("Email-stats")]
     public async Task<IActionResult> GetEmailStatsAsync()
     {
-        return Ok();
+        var subscribers = await subscriberService.GetAllAsync();
+        var reports = await reportService.GetAllReportsAsync();
+        var stats = new Dictionary<string,int>();
+        foreach(var subscriber in subscribers)
+        {
+            var reportsCount = reports.Where(c=>c.SubscriberId == subscriber.Id).ToList().Count;
+            stats.Add(subscriber.Id + subscriber.Name,reportsCount);
+        }
+        return Ok(stats);
     }
 }
