@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using WeatherReport.API.Configurations;
+using WeatherReport.API.Middlewares;
 using WeatherReport.Business.Jobs;
 using WeatherReport.Business.MappingProfiles;
 using WeatherReport.Business.Services.Implementations;
@@ -76,6 +77,8 @@ if (app.Environment.IsDevelopment())
     var db = scope.ServiceProvider.GetRequiredService<WeatherReportDb>();
     db.Database.EnsureCreated();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
