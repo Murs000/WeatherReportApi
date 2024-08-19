@@ -11,3 +11,5 @@
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/ref/WeatherReport.DataAccess.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.csproj.AssemblyReference.cache
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.sourcelink.json
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/bin/Debug/net8.0/WeatherReport.DataAccess.runtimeconfig.json
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.DataAccess/obj/Debug/net8.0/WeatherReport.DataAccess.genruntimeconfig.cache

@@ -8,12 +8,12 @@ public class SubscriberRepository(WeatherReportDb context) : ISubscriberReposito
 {
     public async Task<IEnumerable<Subscriber>> GetAllAsync()
     {
-        return await context.Subscribers.Where(r => !r.IsDeleted).ToListAsync();
+        return await context.Subscribers.ToListAsync();
     }
     
     public async Task<Subscriber> GetByIdAsync(int id)
     {
-        return await context.Subscribers.FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+        return await context.Subscribers.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task AddAsync(Subscriber subscriber)

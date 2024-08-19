@@ -1,18 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace WeatherReport.DataAccess.Entities;
 
-namespace WeatherReport.DataAccess.Entities;
-
-public class Report
+public class Report : BaseEntity
 {
-    [Key]
-    public int Id { get; set; }
-    public string Description { get; set; }
-    public DateTime CreationDate { get; set; }
-    // TODO: Modify date,base entity
-    public bool IsDeleted { get; set; }
-
-    public void SetCredentials()
-    {
-        CreationDate = DateTime.Now.ToUniversalTime();
-    }
+    public string DayOfWeek { get; set; }
+    public string PartOfDay { get; set; }
+    public List<Forecast> Forecasts { get; set; }
+    
+    public int SubscriberId { get; set; }
+    public Subscriber Subscriber { get; set; }
 }
