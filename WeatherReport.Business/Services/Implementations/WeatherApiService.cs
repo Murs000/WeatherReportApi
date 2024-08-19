@@ -27,13 +27,24 @@ public class WeatherApiService : IWeatherApiService
         var content = await response.Content.ReadAsStringAsync();
         var weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(content);
 
+        var forecasts = new List<ForecastDTO>();
+        foreach(var weather in weatherResponse.Weather)
+        {
+            var forecast = new ForecastDTO
+            {
+                Description = weather.Description,
+                Icon = weather.Icon
+            };
+            forecasts.Add(forecast);
+        }
         return new ReportDTO
         {
-            Descriptions = weatherResponse.Weather.Select(w => w.Description),
-            Icons = weatherResponse.Weather.Select(w => w.Icon)
+            DayOfWeek = await GetDayOfWeek(DateTime.Now),
+            PartOfDay = await GetPartOfDay(DateTime.Now),
+            Forecasts = forecasts
         };
     }
-    public async Task<IEnumerable<WeeklyReportDTO>> GetForWeekWeatherDataAsync(string cityName)
+    public async Task<IEnumerable<ReportDTO>> GetForWeekWeatherDataAsync(string cityName)
     {
         var requestUri = $"{_apiSettings.WeatherApiBaseUrl}{_apiSettings.ApiModeForWeek}?q={cityName}&appid={_apiSettings.ApiKey}&units={_apiSettings.Units}";
         var response = await _httpClient.GetAsync(requestUri);
@@ -42,56 +53,49 @@ public class WeatherApiService : IWeatherApiService
         var content = await response.Content.ReadAsStringAsync();
         var weatherResponse = JsonConvert.DeserializeObject<WeatherForecastResponse>(content);
 
-        return await TakeWeeklyWeatherAsync(weatherResponse);
+        var reports = new List<ReportDTO>();
+
+        foreach(var weathers in weatherResponse.List)
+        {
+            var forecasts = new List<ForecastDTO>();
+            foreach(var weather in weathers.Weather)
+            {
+                var forecast = new ForecastDTO
+                {
+                    Description = weather.Description,
+                    Icon = weather.Icon
+                };
+                forecasts.Add(forecast);
+            }
+            var report = new ReportDTO
+            {
+                DayOfWeek = await GetDayOfWeek(DateTimeOffset.FromUnixTimeSeconds(weathers.Dt).DateTime),
+                PartOfDay = await GetPartOfDay(DateTimeOffset.FromUnixTimeSeconds(weathers.Dt).DateTime),
+                Forecasts = forecasts
+            };
+            reports.Add(report);
+        }
+
+        return reports;
     }
-    private async Task<IEnumerable<WeeklyReportDTO>> TakeWeeklyWeatherAsync(WeatherForecastResponse response)
+    private async Task<string> GetPartOfDay(DateTime dateTime)
     {
         var morningStart = new TimeSpan(0, 0, 0);  // Midnight
         var afternoonStart = new TimeSpan(12, 0, 0); // Noon
         var eveningStart = new TimeSpan(18, 0, 0);  // 6 PM
 
-        // Group the forecasts by day and time of day
-        var groupedByDayAndTime = response.List
-            .GroupBy(f =>
-            {
-                var date = DateTimeOffset.FromUnixTimeSeconds(f.Dt).DateTime;
-                var timeOfDay = date.TimeOfDay;
+        var timeOfDay = dateTime.TimeOfDay;
                 
-                var partOfDay = timeOfDay >= morningStart && timeOfDay < afternoonStart ? "Morning" :
-                                 timeOfDay >= afternoonStart && timeOfDay < eveningStart ? "Afternoon" :
-                                 "Evening";
+        var partOfDay = timeOfDay >= morningStart && timeOfDay < afternoonStart ? "Morning" :
+                        timeOfDay >= afternoonStart && timeOfDay < eveningStart ? "Afternoon" :
+                        "Evening";
 
-                return new { Day = date.Date.ToString("dddd", CultureInfo.InvariantCulture), PartOfDay = partOfDay };
-            })
-            .OrderBy(g => g.Key.Day)
-            .ThenBy(g => g.Key.PartOfDay);
+        return partOfDay;
+    }
+    private async Task<string> GetDayOfWeek(DateTime dateTime)
+    {
+        var dayOfWeek = dateTime.Date.ToString("dddd", CultureInfo.InvariantCulture);
 
-        var reports = new List<WeeklyReportDTO>();
-
-        foreach (var group in groupedByDayAndTime)
-        {
-            var dayOfWeek = group.Key.Day;
-            var partOfDay = group.Key.PartOfDay;
-
-            var descriptions = group.SelectMany(f => f.Weather)
-                .Select(w => w.Description)
-                .Distinct(); // Optionally, remove duplicate descriptions
-
-            var icons = group.SelectMany(f => f.Weather)
-                .Select(w => w.Icon)
-                .Distinct();
-
-            var report = new WeeklyReportDTO
-            {
-                DayOfWeek = dayOfWeek,
-                PartOfDay = partOfDay,
-                Descriptions = descriptions,
-                Icons = icons
-            };
-
-            reports.Add(report);
-        }
-
-        return reports;
+        return dayOfWeek;
     }
 }

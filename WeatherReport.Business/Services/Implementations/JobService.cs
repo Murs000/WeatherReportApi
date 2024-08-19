@@ -21,8 +21,8 @@ public class JobService(IEmailService emailService,
         var report = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
 
         // Build the HTML body
-        var weatherDescription = string.Join("<br/>", report.Descriptions);
-        var weatherIconUrls = report.Icons.Select(r => $"http://openweathermap.org/img/wn/{r}.png");
+        var weatherDescription = string.Join("<br/>", report.Forecasts.Select(f=> f.Description));
+        var weatherIconUrls = report.Forecasts.Select(r => $"http://openweathermap.org/img/wn/{r.Icon}.png");
         var weatherIcons = string.Join("<br/>", weatherIconUrls.Select(url => $"<img src='{url}' alt='Weather Icon' style='width: 50px; height: 50px;' />"));
 
         var emailBody = $@"
@@ -90,7 +90,7 @@ public class JobService(IEmailService emailService,
         </head>
         <body>
             <div class='container'>
-                <h1>Good Morning, {subscriber.Name}!</h1>
+                <h1>Good {report.PartOfDay}, {subscriber.Name}!</h1>
                 <p>Here's your weather snapshot for today:</p>
                 <div class='weather-card'>
                     <div class='weather-icon'>
@@ -126,8 +126,8 @@ public class JobService(IEmailService emailService,
 
     foreach (var subscriber in subscribers)
     {
-        var weeklyReports = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
-
+        var reports = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
+        // TODO : Correct HTML Repeating
         // Build the HTML body
         var emailBody = $@"
         <!DOCTYPE html>
@@ -218,18 +218,18 @@ public class JobService(IEmailService emailService,
                 <div class='report'>";
 
         string dayOfWeek = string.Empty;
-        foreach (var weeklyReport in weeklyReports)
+        foreach (var report in reports)
         {
-            if (dayOfWeek != weeklyReport.DayOfWeek)
+            if (dayOfWeek != report.DayOfWeek)
             {
-                dayOfWeek = weeklyReport.DayOfWeek;
-                emailBody += $"<div class='report-day'>{weeklyReport.DayOfWeek}</div>";
+                dayOfWeek = report.DayOfWeek;
+                emailBody += $"<div class='report-day'>{report.DayOfWeek}</div>";
             }
-            emailBody += $"<div class='report-part'>{weeklyReport.PartOfDay}</div>";
+            emailBody += $"<div class='report-part'>{report.PartOfDay}</div>";
 
             emailBody += "<div class='report-description'>";
-            var descriptions = weeklyReport.Descriptions.ToList();
-            var icons = weeklyReport.Icons.ToList();
+            var descriptions = report.Forecasts.Select(f=>f.Description).ToList();
+            var icons = report.Forecasts.Select(f=>f.Icon).ToList();
 
             for (int i = 0; i < descriptions.Count; i++)
             {
