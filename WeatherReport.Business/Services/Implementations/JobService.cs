@@ -12,114 +12,98 @@ public class JobService(IEmailService emailService,
     public async Task SendDailyEmailAsync()
 {
     var subscribers = await subscriberService.GetBySubscriptionTypeAsync(SubscriptionType.Daily);
+    
+    // TODO: WriteDb;
+    // TODO: Middleware exception handling;
 
     foreach (var subscriber in subscribers)
     {
         var report = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
 
         // Build the HTML body
+        var weatherDescription = string.Join("<br/>", report.Descriptions);
+        var weatherIconUrls = report.Icons.Select(r => $"http://openweathermap.org/img/wn/{r}.png");
+        var weatherIcons = string.Join("<br/>", weatherIconUrls.Select(url => $"<img src='{url}' alt='Weather Icon' style='width: 50px; height: 50px;' />"));
+
         var emailBody = $@"
         <!DOCTYPE html>
         <html lang='en'>
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Daily Weather Report</title>
+            <title>Daily Weather Snapshot</title>
             <style>
                 body {{
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: #f4f4f9;
+                    font-family: Arial, sans-serif;
                     margin: 0;
                     padding: 0;
+                    background-color: #f9f9f9;
+                    color: #333;
                 }}
                 .container {{
+                    width: 90%;
                     max-width: 600px;
                     margin: 20px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                }}
-                .header {{
-                    background-color: #ff6f00; /* Orange background */
-                    color: white;
+                    background: #fff;
                     padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                     text-align: center;
                 }}
-                .header h1 {{
-                    margin: 0;
+                h1 {{
+                    color: #ff5722;
                     font-size: 24px;
-                }}
-                .header p {{
-                    margin: 5px 0 0;
-                    font-size: 16px;
-                }}
-                .report {{
-                    padding: 20px;
-                    background-color: #f0f0f0; /* Light grey background */
+                    font-family: 'Roboto', sans-serif;
                 }}
                 .weather-card {{
                     display: flex;
                     align-items: center;
-                    margin-bottom: 15px;
+                    justify-content: center;
+                    background: #e3f2fd;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-top: 20px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    text-align: center;
                 }}
                 .weather-icon {{
-                    width: 50px;
-                    height: 50px;
                     margin-right: 15px;
-                    vertical-align: middle;
                 }}
-                .weather-text {{
-                    font-size: 16px;
+                .weather-details {{
+                    text-align: center;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }}
+                .weather-description {{
+                    font-size: 20px;
+                    font-weight: bold;
                     color: #333;
-                    line-height: 1.6;
+                    margin: 10px 0;
+                    line-height: 1.4;
                 }}
                 .footer {{
-                    background-color: #ff6f00; /* Orange background */
-                    color: white;
-                    padding: 15px;
-                    text-align: center;
+                    margin-top: 20px;
                     font-size: 14px;
-                    border-top: 1px solid #ff6f00;
-                }}
-                .footer p {{
-                    margin: 0;
-                }}
-                .footer a {{
-                    color: #ffffff;
-                    text-decoration: none;
-                    font-weight: bold;
+                    color: #777;
                 }}
             </style>
         </head>
         <body>
             <div class='container'>
-                <div class='header'>
-                    <h1>Daily Weather Report</h1>
-                    <p>For {subscriber.Name} {subscriber.Surname}</p>
-                </div>
-                <div class='report'>";
-
-        var descriptions = report.Descriptions.ToList();
-        var icons = report.Icons.ToList();
-
-        for (int i = 0; i < descriptions.Count; i++)
-        {
-            string weatherIcon = i < icons.Count ? $"<img class='weather-icon' src='http://openweathermap.org/img/wn/{icons[i]}.png' alt='Weather Icon'/>" : string.Empty;
-
-            emailBody += $@"
-            <div class='weather-card'>
-                {weatherIcon}
-                <div class='weather-text'>{descriptions[i]}</div>
-            </div>";
-        }
-
-        emailBody += @"
+                <h1>Good Morning, {subscriber.Name}!</h1>
+                <p>Here's your weather snapshot for today:</p>
+                <div class='weather-card'>
+                    <div class='weather-icon'>
+                        {weatherIcons}
+                    </div>
+                    <div class='weather-details'>
+                        <div class='weather-description'>
+                            {weatherDescription}
+                        </div>
+                    </div>
                 </div>
                 <div class='footer'>
-                    <p>Have a fantastic day ahead! 🌟</p>
-                    <p>Stay prepared! Check the latest forecasts anytime.</p>
-                    <p>Visit our <a href='https://weatherwebsite.com'>website</a> for more details.</p>
+                    Have a fantastic day ahead! 🌟
                 </div>
             </div>
         </body>
