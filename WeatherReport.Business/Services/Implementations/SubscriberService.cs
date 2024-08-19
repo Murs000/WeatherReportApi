@@ -18,9 +18,16 @@ public class SubscriberService : ISubscriberService
         _mapper = mapper;
     }
     
-    public async Task<IEnumerable<SubscriberDTO>> GetAllAsync()
+    public async Task<IEnumerable<SubscriberDTO>> GetAllAsync(SubscriptionType? subscriptionType = null, string? city = null)
     {
         var subscribers = await _subscriberRepository.GetAllAsync();
+        
+        if(subscriptionType != null)
+            subscribers = subscribers.Where(s=>s.SubscriptionType == subscriptionType);
+        
+        if(city != null)
+            subscribers = subscribers.Where(s=> s.CityOfResidence == city);
+
         return _mapper.Map<IEnumerable<SubscriberDTO>>(subscribers);
     }
 
@@ -28,17 +35,6 @@ public class SubscriberService : ISubscriberService
     {
         var subscriber = await _subscriberRepository.GetByIdAsync(id);
         return _mapper.Map<SubscriberDTO>(subscriber);
-    }
-
-    public async Task<IEnumerable<SubscriberDTO>> GetBySubscriptionTypeAsync(SubscriptionType subscriptionType)
-    {
-        //TODO: filter get all;
-        var subscribers = await _subscriberRepository.GetAllAsync();
-        var filteredSubscribers = subscribers
-            .Where(s => s.SubscriptionType == subscriptionType)
-            .ToList();
-
-        return _mapper.Map<IEnumerable<SubscriberDTO>>(filteredSubscribers);
     }
 
     public async Task AddAsync(SubscriberDTO subscriberDto)
