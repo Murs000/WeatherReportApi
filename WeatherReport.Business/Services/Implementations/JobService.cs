@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 using WeatherReport.DataAccess.Enums;
@@ -11,14 +13,30 @@ public class JobService(IEmailService emailService,
 {
     public async Task SendDailyEmailAsync()
 {
-    var subscribers = await subscriberService.GetBySubscriptionTypeAsync(SubscriptionType.Daily);
-    
-    // TODO: WriteDb;
+    var subscribers = await subscriberService.GetAllAsync(SubscriptionType.Daily);
 
     foreach (var subscriber in subscribers)
     {
         var report = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
 
+        var emailBody = await SetBody(report,subscriber);
+
+        // Define the email details
+        var emailRequest = new EmailRequestDTO
+        {
+            ToEmail = subscriber.Email,
+            Subject = $"Daily Report for {subscriber.Name} {subscriber.Surname}",
+            Body = emailBody
+        };
+
+        await emailService.SendEmailAsync(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body);
+
+        report.SubscriberId = subscriber.Id;
+        await reportService.CreateReportAsync(report);
+    }
+}
+    private async Task<string> SetBody(ReportDTO report,SubscriberDTO subscriber)
+    {
         // Build the HTML body
         var weatherDescription = string.Join("<br/>", report.Forecasts.Select(f=> f.Description));
         var weatherIconUrls = report.Forecasts.Select(r => $"http://openweathermap.org/img/wn/{r.Icon}.png");
@@ -107,25 +125,37 @@ public class JobService(IEmailService emailService,
             </div>
         </body>
         </html>";
+        return emailBody;
+    }
+    public async Task SendWeeklyEmailAsync()
+{
+    var subscribers = await subscriberService.GetAllAsync(SubscriptionType.Weekly);
+
+    foreach (var subscriber in subscribers)
+    {
+        var reports = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
+        
+        var emailBody = await SetBody(reports,subscriber);
 
         // Define the email details
         var emailRequest = new EmailRequestDTO
         {
             ToEmail = subscriber.Email,
-            Subject = $"Daily Report for {subscriber.Name} {subscriber.Surname}",
+            Subject = $"Weekly Report for {subscriber.Name} {subscriber.Surname}",
             Body = emailBody
         };
 
         await emailService.SendEmailAsync(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body);
+
+        foreach(var report in reports)
+        {
+            report.SubscriberId = subscriber.Id;
+            await reportService.CreateReportAsync(report);
+        }
     }
 }
-    public async Task SendWeeklyEmailAsync()
-{
-    var subscribers = await subscriberService.GetBySubscriptionTypeAsync(SubscriptionType.Weekly);
-
-    foreach (var subscriber in subscribers)
+    private async Task<string> SetBody(IEnumerable<ReportDTO> reports, SubscriberDTO subscriber)
     {
-        var reports = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
         // TODO : Correct HTML Repeating
         // Build the HTML body
         var emailBody = $@"
@@ -253,18 +283,8 @@ public class JobService(IEmailService emailService,
             </div>
         </body>
         </html>";
-
-        // Define the email details
-        var emailRequest = new EmailRequestDTO
-        {
-            ToEmail = subscriber.Email,
-            Subject = $"Weekly Report for {subscriber.Name} {subscriber.Surname}",
-            Body = emailBody
-        };
-
-        await emailService.SendEmailAsync(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body);
+        return emailBody;
     }
-}
     public async Task SaveHourlyReportAsync()
     {
         // Example of how you might take a report, depending on your implementation
