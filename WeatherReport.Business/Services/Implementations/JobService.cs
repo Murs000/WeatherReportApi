@@ -14,7 +14,6 @@ public class JobService(IEmailService emailService,
     var subscribers = await subscriberService.GetBySubscriptionTypeAsync(SubscriptionType.Daily);
     
     // TODO: WriteDb;
-    // TODO: Middleware exception handling;
 
     foreach (var subscriber in subscribers)
     {
@@ -218,6 +217,7 @@ public class JobService(IEmailService emailService,
                 <div class='report'>";
 
         string dayOfWeek = string.Empty;
+        string partOfDay = string.Empty;
         foreach (var report in reports)
         {
             if (dayOfWeek != report.DayOfWeek)
@@ -225,8 +225,11 @@ public class JobService(IEmailService emailService,
                 dayOfWeek = report.DayOfWeek;
                 emailBody += $"<div class='report-day'>{report.DayOfWeek}</div>";
             }
-            emailBody += $"<div class='report-part'>{report.PartOfDay}</div>";
-
+            if (partOfDay != report.PartOfDay)
+            {
+                partOfDay = report.PartOfDay;
+                emailBody += $"<div class='report-part'>{report.PartOfDay}</div>";
+            }
             emailBody += "<div class='report-description'>";
             var descriptions = report.Forecasts.Select(f=>f.Description).ToList();
             var icons = report.Forecasts.Select(f=>f.Icon).ToList();
