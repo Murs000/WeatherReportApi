@@ -287,7 +287,7 @@ public class JobService(IEmailService emailService,
         foreach (var subscriber in subscribers)
         {
             var forecast = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
-            forecast.SubscriberId = subscriber.Id;
+            forecast.SubscriberId = 0;
             await service.ForecastService.AddAsync(forecast);
         }
     }
