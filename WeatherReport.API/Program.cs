@@ -21,6 +21,8 @@ builder.Services.AddSwaggerGen();
 // Register AutoMapper
 builder.Services.AddAutoMapper(typeof(SubscriberProfile));
 builder.Services.AddAutoMapper(typeof(ReportProfile));
+builder.Services.AddAutoMapper(typeof(WeatherDetailProfile));
+builder.Services.AddAutoMapper(typeof(ForecastProfile));
 
 // Register PostgreSQL database context
 builder.Services.AddDbContext<WeatherReportDb>(options =>
@@ -55,11 +57,9 @@ builder.Services.AddScoped<DailyEmailJob>();
 builder.Services.AddScoped<HourlyReportJob>();
 
 // Register the repositories and services
-builder.Services.AddScoped<IReportRepository, ReportRepository>();
-builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
+builder.Services.AddScoped<IRepositoryUnitOfWork, RepositoryUnitOfWork>();
 
-builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<ISubscriberService, SubscriberService>();
+builder.Services.AddScoped<IServiceUnitOfWork, ServiceUnitOfWork>();
 
 builder.Services.AddScoped<IJobService, JobService>();
 

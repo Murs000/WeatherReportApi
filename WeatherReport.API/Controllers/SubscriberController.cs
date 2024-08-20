@@ -6,56 +6,48 @@ namespace WeatherReport.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class SubscriberController : ControllerBase
+public class SubscriberController(IServiceUnitOfWork service) : ControllerBase
 {
-    private readonly ISubscriberService _subscriberService;
-
-    public SubscriberController(ISubscriberService subscriberService)
-    {
-        _subscriberService = subscriberService;
-    }
-
-    [HttpGet("{id}")]
-    public async Task<ActionResult<SubscriberDTO>> GetById(int id)
-    {
-        var subscriber = await _subscriberService.GetByIdAsync(id);
-        if (subscriber == null)
-        {
-            return NotFound();
-        }
-        return Ok(subscriber);
-    }
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<SubscriberDTO>>> GetAll()
     {
-        var subscribers = await _subscriberService.GetAllAsync();
-        return Ok(subscribers);
+        var subscriberDTOs = await service.SubscriberService.GetAllAsync();
+        return Ok(subscriberDTOs);
     }
-
+    [HttpGet("{id}")]
+    public async Task<ActionResult<SubscriberDTO>> GetById(int id)
+    {
+        var subscriberDTO = await service.SubscriberService.GetByIdAsync(id);
+        if (subscriberDTO == null)
+        {
+            return NotFound();
+        }
+        return Ok(subscriberDTO);
+    }
     [HttpPost]
-    public async Task<ActionResult> Add(SubscriberDTO subscriberDto)
+    public async Task<ActionResult> Add([FromBody]SubscriberDTO subscriberDTO)
     {
-        await _subscriberService.AddAsync(subscriberDto);
-        return CreatedAtAction(nameof(GetById), new { id = subscriberDto.Id }, subscriberDto);
+        await service.SubscriberService.AddAsync(subscriberDTO);
+        return CreatedAtAction(nameof(GetById), new { id = subscriberDTO.Id }, subscriberDTO);
     }
-
-    [HttpPut("{id}")]
-    public async Task<ActionResult> Update(int id, SubscriberDTO subscriberDto)
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody]SubscriberDTO subscriberDTO)
     {
-        if (id != subscriberDto.Id)
+        if (service.SubscriberService.GetByIdAsync(subscriberDTO.Id) == null)
         {
             return BadRequest();
         }
 
-        await _subscriberService.UpdateAsync(subscriberDto);
-        return NoContent();
+        await service.SubscriberService.UpdateAsync(subscriberDTO);
+        return Ok(subscriberDTO);
     }
-
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
-        await _subscriberService.DeleteAsync(id);
-        return NoContent();
+        if(await service.SubscriberService.DeleteAsync(id))
+        {
+            return Ok();
+        }
+        return NotFound();
     }
 }

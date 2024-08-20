@@ -5,57 +5,48 @@ using WeatherReport.Business.Services.Interfaces;
 namespace WeatherReport.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
-public class ReportController (IReportService reportService) : ControllerBase
+public class ReportController (IServiceUnitOfWork service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ReportDTO>>> GetReports()
+    public async Task<ActionResult<IEnumerable<ReportDTO>>> GetAll()
     {
-        var reports = await reportService.GetAllReportsAsync();
-        return Ok(reports);
+        var reportDTOs = await service.ReportService.GetAllAsync();
+        return Ok(reportDTOs);
     }
-
     [HttpGet("{id}")]
-    public async Task<ActionResult<ReportDTO>> GetReport(int id)
+    public async Task<ActionResult<ReportDTO>> GetById(int id)
     {
-        var report = await reportService.GetReportByIdAsync(id);
-        if (report == null)
+        var reportDTO = await service.ReportService.GetByIdAsync(id);
+        if (reportDTO == null)
         {
             return NotFound();
         }
-        return Ok(report);
+        return Ok(reportDTO);
     }
-
     [HttpPost]
-    public async Task<ActionResult<ReportDTO>> CreateReport(ReportDTO reportDTO)
+    public async Task<ActionResult> Add([FromBody]ReportDTO reportDTO)
     {
-        var createdReport = await reportService.CreateReportAsync(reportDTO);
-        return CreatedAtAction(nameof(GetReport), new { id = createdReport.Id }, createdReport);
+        await service.ReportService.AddAsync(reportDTO);
+        return CreatedAtAction(nameof(GetById), new { id = reportDTO.Id }, reportDTO);
     }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateReport(int id, ReportDTO reportDTO)
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody]ReportDTO reportDTO)
     {
-        if (id != reportDTO.Id)
+        if (service.ReportService.GetByIdAsync(reportDTO.Id) == null)
         {
             return BadRequest();
         }
 
-        var updatedReport = await reportService.UpdateReportAsync(reportDTO);
-        if (updatedReport == null)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        await service.ReportService.UpdateAsync(reportDTO);
+        return Ok(reportDTO);
     }
-
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteReport(int id)
+    public async Task<ActionResult> Delete(int id)
     {
-        var result = await reportService.DeleteReportAsync(id);
-        if (!result)
+        if(await service.ReportService.DeleteAsync(id))
         {
-            return NotFound();
+            return Ok();
         }
-        return NoContent();
+        return NotFound();
     }
 }
