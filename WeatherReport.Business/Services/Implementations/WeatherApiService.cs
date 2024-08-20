@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 using WeatherReport.Business.Settings;
+using WeatherReport.DataAccess.Entities;
 
 namespace WeatherReport.Business.Services.Implementations;
 
@@ -18,7 +19,7 @@ public class WeatherApiService : IWeatherApiService
         _apiSettings = apiSettings.Value;
     }
 
-    public async Task<ReportDTO> GetCurrentWeatherDataAsync(string cityName)
+    public async Task<ForecastDTO> GetCurrentWeatherDataAsync(string cityName)
     {
         var requestUri = $"{_apiSettings.WeatherApiBaseUrl}{_apiSettings.ApiModeCurrent}?q={cityName}&appid={_apiSettings.ApiKey}&units={_apiSettings.Units}";
         var response = await _httpClient.GetAsync(requestUri);
@@ -27,24 +28,28 @@ public class WeatherApiService : IWeatherApiService
         var content = await response.Content.ReadAsStringAsync();
         var weatherResponse = JsonConvert.DeserializeObject<WeatherResponse>(content);
 
-        var forecasts = new List<ForecastDTO>();
+        var weatherDetails = new List<WeatherDetailDTO>();
         foreach(var weather in weatherResponse.Weather)
         {
-            var forecast = new ForecastDTO
+            var weatherDetail = new WeatherDetailDTO
             {
                 Description = weather.Description,
                 Icon = weather.Icon
             };
-            forecasts.Add(forecast);
+            weatherDetails.Add(weatherDetail);
         }
-        return new ReportDTO
+        var report = new ReportDTO
         {
             DayOfWeek = await GetDayOfWeek(DateTime.Now),
             PartOfDay = await GetPartOfDay(DateTime.Now),
-            Forecasts = forecasts
+            WeatherDetails = weatherDetails
+        };
+        return new ForecastDTO
+        {
+            Reports = [report]
         };
     }
-    public async Task<IEnumerable<ReportDTO>> GetForWeekWeatherDataAsync(string cityName)
+    public async Task<ForecastDTO> GetForWeekWeatherDataAsync(string cityName)
     {
         var requestUri = $"{_apiSettings.WeatherApiBaseUrl}{_apiSettings.ApiModeForWeek}?q={cityName}&appid={_apiSettings.ApiKey}&units={_apiSettings.Units}";
         var response = await _httpClient.GetAsync(requestUri);
@@ -57,26 +62,29 @@ public class WeatherApiService : IWeatherApiService
 
         foreach(var weathers in weatherResponse.List)
         {
-            var forecasts = new List<ForecastDTO>();
+            var weatherDetails = new List<WeatherDetailDTO>();
             foreach(var weather in weathers.Weather)
             {
-                var forecast = new ForecastDTO
+                var weatherDetail = new WeatherDetailDTO
                 {
                     Description = weather.Description,
                     Icon = weather.Icon
                 };
-                forecasts.Add(forecast);
+                weatherDetails.Add(weatherDetail);
             }
             var report = new ReportDTO
             {
                 DayOfWeek = await GetDayOfWeek(DateTimeOffset.FromUnixTimeSeconds(weathers.Dt).DateTime),
                 PartOfDay = await GetPartOfDay(DateTimeOffset.FromUnixTimeSeconds(weathers.Dt).DateTime),
-                Forecasts = forecasts
+                WeatherDetails = weatherDetails
             };
             reports.Add(report);
         }
 
-        return reports;
+        return new ForecastDTO
+        {
+            Reports = reports
+        };
     }
     private async Task<string> GetPartOfDay(DateTime dateTime)
     {

@@ -7,20 +7,12 @@ using WeatherReport.DataAccess.Repositories.Interfaces;
 
 namespace WeatherReport.Business.Services.Implementations;
 
-public class SubscriberService : ISubscriberService
+public class SubscriberService(IRepositoryUnitOfWork repository, IMapper mapper) : ISubscriberService
 {
-    private readonly ISubscriberRepository _subscriberRepository;
-    private readonly IMapper _mapper;
-
-    public SubscriberService(ISubscriberRepository subscriberRepository, IMapper mapper)
-    {
-        _subscriberRepository = subscriberRepository;
-        _mapper = mapper;
-    }
     
     public async Task<IEnumerable<SubscriberDTO>> GetAllAsync(SubscriptionType? subscriptionType = null, string? city = null)
     {
-        var subscribers = await _subscriberRepository.GetAllAsync();
+        var subscribers = await repository.SubscriberRepository.GetAllAsync();
         
         if(subscriptionType != null)
             subscribers = subscribers.Where(s=>s.SubscriptionType == subscriptionType);
@@ -28,29 +20,32 @@ public class SubscriberService : ISubscriberService
         if(city != null)
             subscribers = subscribers.Where(s=> s.CityOfResidence == city);
 
-        return _mapper.Map<IEnumerable<SubscriberDTO>>(subscribers);
+        return mapper.Map<IEnumerable<SubscriberDTO>>(subscribers);
     }
 
     public async Task<SubscriberDTO> GetByIdAsync(int id)
     {
-        var subscriber = await _subscriberRepository.GetByIdAsync(id);
-        return _mapper.Map<SubscriberDTO>(subscriber);
+        var subscriber = await repository.SubscriberRepository.GetByIdAsync(id);
+        return mapper.Map<SubscriberDTO>(subscriber);
     }
 
-    public async Task AddAsync(SubscriberDTO subscriberDto)
+    public async Task<SubscriberDTO> AddAsync(SubscriberDTO subscriberDto)
     {
-        var subscriber = _mapper.Map<Subscriber>(subscriberDto);
+        var subscriber = mapper.Map<Subscriber>(subscriberDto);
         subscriber.SetCredentials(); // Setting the creation date
-        await _subscriberRepository.AddAsync(subscriber);
+        await repository.SubscriberRepository.AddAsync(subscriber);
+        return mapper.Map<SubscriberDTO>(subscriber);
     }
-    public async Task UpdateAsync(SubscriberDTO subscriberDto)
+    public async Task<SubscriberDTO> UpdateAsync(SubscriberDTO subscriberDto)
     {
-        var subscriber = _mapper.Map<Subscriber>(subscriberDto);
-        await _subscriberRepository.UpdateAsync(subscriber);
+        var subscriber = mapper.Map<Subscriber>(subscriberDto);
+        subscriber.SetCredentials(); // Setting the modify date
+        await repository.SubscriberRepository.UpdateAsync(subscriber);
+        return mapper.Map<SubscriberDTO>(subscriber);
     }
 
-    public async Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        await _subscriberRepository.DeleteAsync(id);
+        return await repository.SubscriberRepository.DeleteAsync(id);
     }
 }

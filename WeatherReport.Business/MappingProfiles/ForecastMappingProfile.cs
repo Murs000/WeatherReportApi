@@ -4,10 +4,10 @@ using WeatherReport.DataAccess.Entities;
 
 namespace WeatherReport.Business.MappingProfiles;
 
-public class ReportProfile : Profile
+public class ForecastProfile : Profile
 {
-    public ReportProfile()
-    {
-        CreateMap<Report, ReportDTO>().ReverseMap();
+    public ForecastProfile()
+    {   
+        CreateMap<Forecast, ForecastDTO>().ReverseMap(); 
     }
 }

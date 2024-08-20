@@ -6,7 +6,7 @@ public interface ISubscriberService
 {
     Task<IEnumerable<SubscriberDTO>> GetAllAsync(SubscriptionType? subscriptionType = null ,string? city = null);
     Task<SubscriberDTO> GetByIdAsync(int id);
-    Task AddAsync(SubscriberDTO subscriberDto);
-    Task UpdateAsync(SubscriberDTO subscriberDto);
-    Task DeleteAsync(int id);
+    Task<SubscriberDTO> AddAsync(SubscriberDTO subscriberDto);
+    Task<SubscriberDTO> UpdateAsync(SubscriberDTO subscriberDto);
+    Task<bool> DeleteAsync(int id);
 }

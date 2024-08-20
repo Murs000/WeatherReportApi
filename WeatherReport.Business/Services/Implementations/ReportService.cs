@@ -5,39 +5,39 @@ using WeatherReport.DataAccess.Entities;
 using WeatherReport.DataAccess.Repositories.Interfaces;
 
 namespace WeatherReport.Business.Services.Implementations;
-public class ReportService(IReportRepository reportRepository, IMapper mapper) : IReportService
+public class ReportService(IRepositoryUnitOfWork repository, IMapper mapper) : IReportService
 {
 
-    public async Task<IEnumerable<ReportDTO>> GetAllReportsAsync()
+    public async Task<IEnumerable<ReportDTO>> GetAllAsync()
     {
-        var reports = await reportRepository.GetAllAsync();
+        var reports = await repository.ReportRepository.GetAllAsync();
         return mapper.Map<IEnumerable<ReportDTO>>(reports);
     }
 
-    public async Task<ReportDTO> GetReportByIdAsync(int id)
+    public async Task<ReportDTO> GetByIdAsync(int id)
     {
-        var report = await reportRepository.GetByIdAsync(id);
+        var report = await repository.ReportRepository.GetByIdAsync(id);
         return mapper.Map<ReportDTO>(report);
     }
 
-    public async Task<ReportDTO> CreateReportAsync(ReportDTO reportDTO)
+    public async Task<ReportDTO> AddAsync(ReportDTO reportDTO)
     {
         var report = mapper.Map<Report>(reportDTO);
         report.SetCredentials();
-        await reportRepository.AddAsync(report);
+        await repository.ReportRepository.AddAsync(report);
         return mapper.Map<ReportDTO>(report);
     }
 
-    public async Task<ReportDTO> UpdateReportAsync(ReportDTO reportDTO)
+    public async Task<ReportDTO> UpdateAsync(ReportDTO reportDTO)
     {
         var report = mapper.Map<Report>(reportDTO);
         report.SetCredentials();
-        await reportRepository.UpdateAsync(report);
+        await repository.ReportRepository.UpdateAsync(report);
         return mapper.Map<ReportDTO>(report);
     }
 
-    public async Task<bool> DeleteReportAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        return await reportRepository.DeleteAsync(id);
+        return await repository.ReportRepository.DeleteAsync(id);
     }
 }

@@ -8,18 +8,17 @@ namespace WeatherReport.Business.Services.Implementations;
 
 public class JobService(IEmailService emailService,
                         IWeatherApiService weatherApiService,
-                        ISubscriberService subscriberService,
-                        IReportService reportService) : IJobService
+                        IServiceUnitOfWork service) : IJobService
 {
     public async Task SendDailyEmailAsync()
 {
-    var subscribers = await subscriberService.GetAllAsync(SubscriptionType.Daily);
+    var subscribers = await service.SubscriberService.GetAllAsync(SubscriptionType.Daily);
 
     foreach (var subscriber in subscribers)
     {
-        var report = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
+        var forecast = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
 
-        var emailBody = await SetBody(report,subscriber);
+        var emailBody = await SetBody(forecast.Reports.First(),subscriber);
 
         // Define the email details
         var emailRequest = new EmailRequestDTO
@@ -31,15 +30,15 @@ public class JobService(IEmailService emailService,
 
         await emailService.SendEmailAsync(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body);
 
-        report.SubscriberId = subscriber.Id;
-        await reportService.CreateReportAsync(report);
+        forecast.SubscriberId = subscriber.Id;
+        await service.ForecastService.AddAsync(forecast);
     }
 }
     private async Task<string> SetBody(ReportDTO report,SubscriberDTO subscriber)
     {
         // Build the HTML body
-        var weatherDescription = string.Join("<br/>", report.Forecasts.Select(f=> f.Description));
-        var weatherIconUrls = report.Forecasts.Select(r => $"http://openweathermap.org/img/wn/{r.Icon}.png");
+        var weatherDescription = string.Join("<br/>", report.WeatherDetails.Select(f=> f.Description));
+        var weatherIconUrls = report.WeatherDetails.Select(r => $"http://openweathermap.org/img/wn/{r.Icon}.png");
         var weatherIcons = string.Join("<br/>", weatherIconUrls.Select(url => $"<img src='{url}' alt='Weather Icon' style='width: 50px; height: 50px;' />"));
 
         var emailBody = $@"
@@ -129,13 +128,13 @@ public class JobService(IEmailService emailService,
     }
     public async Task SendWeeklyEmailAsync()
 {
-    var subscribers = await subscriberService.GetAllAsync(SubscriptionType.Weekly);
+    var subscribers = await service.SubscriberService.GetAllAsync(SubscriptionType.Weekly);
 
     foreach (var subscriber in subscribers)
     {
-        var reports = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
+        var forecast = await weatherApiService.GetForWeekWeatherDataAsync(subscriber.CityOfResidence);
         
-        var emailBody = await SetBody(reports,subscriber);
+        var emailBody = await SetBody(forecast.Reports,subscriber);
 
         // Define the email details
         var emailRequest = new EmailRequestDTO
@@ -147,11 +146,8 @@ public class JobService(IEmailService emailService,
 
         await emailService.SendEmailAsync(emailRequest.ToEmail, emailRequest.Subject, emailRequest.Body);
 
-        foreach(var report in reports)
-        {
-            report.SubscriberId = subscriber.Id;
-            await reportService.CreateReportAsync(report);
-        }
+        forecast.SubscriberId = subscriber.Id;
+        await service.ForecastService.AddAsync(forecast);
     }
 }
     private async Task<string> SetBody(IEnumerable<ReportDTO> reports, SubscriberDTO subscriber)
@@ -261,8 +257,8 @@ public class JobService(IEmailService emailService,
                 emailBody += $"<div class='report-part'>{report.PartOfDay}</div>";
             }
             emailBody += "<div class='report-description'>";
-            var descriptions = report.Forecasts.Select(f=>f.Description).ToList();
-            var icons = report.Forecasts.Select(f=>f.Icon).ToList();
+            var descriptions = report.WeatherDetails.Select(f=>f.Description).ToList();
+            var icons = report.WeatherDetails.Select(f=>f.Icon).ToList();
 
             for (int i = 0; i < descriptions.Count; i++)
             {
@@ -288,10 +284,10 @@ public class JobService(IEmailService emailService,
     public async Task SaveHourlyReportAsync()
     {
         // Example of how you might take a report, depending on your implementation
-        var report = await weatherApiService.GetCurrentWeatherDataAsync("Baku");
+        // var report = await weatherApiService.GetCurrentWeatherDataAsync("Baku");
 
     
-            await reportService.CreateReportAsync(report);
+        //     await reportService.CreateReportAsync(report);
         
     }
 }
