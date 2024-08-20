@@ -63,6 +63,8 @@ builder.Services.AddScoped<IServiceUnitOfWork, ServiceUnitOfWork>();
 
 builder.Services.AddScoped<IJobService, JobService>();
 
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+
 var app = builder.Build();
 
 QuartzJobScheduler.ConfigureJobs(builder.Services);

@@ -7,33 +7,21 @@ namespace WeatherReport.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StaticticsController(IServiceUnitOfWork service) : ControllerBase
+public class StaticticsController(IStatisticsService service) : ControllerBase
 {
-    [HttpGet("City")]
-    public async Task<IActionResult> GetCityPercentageAsync()
+    [HttpGet("City-stats")]
+    public async Task<IActionResult> GetCityStats()
     {
-        var subscribers = await service.SubscriberService.GetAllAsync();
-        var cities = subscribers.Select(s=>s.CityOfResidence);
-        var uniqueCities = subscribers.Select(s=>s.CityOfResidence).Distinct();
-        var stats = new Dictionary<string,int>();
-        foreach(var city in uniqueCities)
-        {
-            var percentageOfCity = cities.Where(c=>c == city).ToList().Count;
-            stats.Add(city,percentageOfCity);
-        }
-        return Ok(stats);
+        return Ok(await service.GetCityStats());
     }
     [HttpGet("Email-stats")]
-    public async Task<IActionResult> GetEmailStatsAsync()
+    public async Task<IActionResult> GetEmailStats()
     {
-        var subscribers = await service.SubscriberService.GetAllAsync();
-        var forecasts = await service.ForecastService.GetAllAsync();
-        var stats = new Dictionary<string,int>();
-        foreach(var subscriber in subscribers)
-        {
-            var reportsCount = forecasts.Where(c=>c.SubscriberId == subscriber.Id).ToList().Count;
-            stats.Add(subscriber.Id + subscriber.Name,reportsCount);
-        }
-        return Ok(stats);
+        return Ok(await service.GetEmailStats());
+    }
+    [HttpGet("Subsription-stats")]
+    public async Task<IActionResult> GetSubsciptionsStats()
+    {
+        return Ok(await service.GetSubsciptionsStats());
     }
 }
