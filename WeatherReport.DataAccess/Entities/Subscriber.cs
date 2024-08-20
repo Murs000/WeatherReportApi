@@ -11,5 +11,5 @@ public class Subscriber : BaseEntity
     public string CityOfResidence { get; set; }
     public SubscriptionType SubscriptionType { get; set; }
     public DateTime SubscriptionDate { get; set;}
-    public List<Report> Reports { get; set; }
+    public List<Forecast> Forecasts { get; set; }
 }

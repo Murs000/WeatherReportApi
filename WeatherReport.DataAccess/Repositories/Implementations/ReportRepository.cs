@@ -9,12 +9,12 @@ public class ReportRepository(WeatherReportDb context) : IReportRepository
 
     public async Task<IEnumerable<Report>> GetAllAsync()
     {
-        return await context.Report.Where(r => !r.IsDeleted).ToListAsync();
+        return await context.Report.ToListAsync();
     }
 
     public async Task<Report> GetByIdAsync(int id)
     {
-        return await context.Report.FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+        return await context.Report.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task AddAsync(Report report)
@@ -31,7 +31,7 @@ public class ReportRepository(WeatherReportDb context) : IReportRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var report = await context.Report.FirstOrDefaultAsync(r => r.Id == id);
+        var report = await context.Report.FindAsync(id);
         if (report == null || report.IsDeleted)
         {
             return false;

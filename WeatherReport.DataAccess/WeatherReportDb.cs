@@ -9,6 +9,7 @@ public class WeatherReportDb : DbContext
     public WeatherReportDb(DbContextOptions<WeatherReportDb> options) : base(options) {}
     public DbSet<Report> Report => Set<Report>();
     public DbSet<Subscriber> Subscribers => Set<Subscriber>();
+    public DbSet<WeatherDetail> WeatherDetails => Set<WeatherDetail>();
     public DbSet<Forecast> Forecasts => Set<Forecast>();
 
     // Configuring entity relationships and properties
@@ -16,24 +17,34 @@ public class WeatherReportDb : DbContext
     {
         // Eagerly load all related entities
         modelBuilder.Entity<Report>()
-                .Navigation(r => r.Forecasts)
-                .AutoInclude();  // Auto-include forecasts with reports
+                .Navigation(r => r.WeatherDetails)
+                .AutoInclude();  // Auto-include weatherDetails with reports
 
         modelBuilder.Entity<Subscriber>()
-                .Navigation(s => s.Reports)
+                .Navigation(s => s.Forecasts)
                 .AutoInclude();  // Auto-include reports with subscribers
+
+        modelBuilder.Entity<Forecast>()
+                .Navigation(s => s.Reports)
+                .AutoInclude();  // Auto-include reports with forecasts
 
         // Subscriber configuration
         modelBuilder.Entity<Subscriber>()
-            .HasMany(s => s.Reports)
+            .HasMany(s => s.Forecasts)
             .WithOne(r => r.Subscriber)
             .HasForeignKey(r => r.SubscriberId);
 
         // Report configuration
         modelBuilder.Entity<Report>()
-            .HasMany(r => r.Forecasts)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasMany(r => r.WeatherDetails)
+            .WithOne(w => w.Report)
+            .HasForeignKey(w=> w.ReportId);
+
+        // Subscriber configuration
+        modelBuilder.Entity<Forecast>()
+            .HasMany(s => s.Reports)
+            .WithOne(r => r.Forecast)
+            .HasForeignKey(r => r.ForecastId);
 
         // Set SubscriptionType enum to be stored as a string
         modelBuilder.Entity<Subscriber>()
@@ -43,6 +54,7 @@ public class WeatherReportDb : DbContext
         // Apply global query filters for soft delete
         modelBuilder.Entity<Subscriber>().HasQueryFilter(s => !s.IsDeleted);
         modelBuilder.Entity<Report>().HasQueryFilter(r => !r.IsDeleted);
-        modelBuilder.Entity<Forecast>().HasQueryFilter(f => !f.IsDeleted);
+        modelBuilder.Entity<Forecast>().HasQueryFilter(r => !r.IsDeleted);
+        modelBuilder.Entity<WeatherDetail>().HasQueryFilter(f => !f.IsDeleted);
     }
 }

@@ -27,15 +27,16 @@ public class SubscriberRepository(WeatherReportDb context) : ISubscriberReposito
         context.Subscribers.Update(subscriber);
         await context.SaveChangesAsync();
     }
-
-    public async Task DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
         var subscriber = await context.Subscribers.FindAsync(id);
-        if (subscriber != null)
+        if (subscriber == null || subscriber.IsDeleted)
         {
-            subscriber.IsDeleted = true;
-            context.Subscribers.Update(subscriber);
-            await context.SaveChangesAsync();
+            return false;
         }
+
+        subscriber.IsDeleted = true;
+        await context.SaveChangesAsync();
+        return true;
     }
 }

@@ -7,5 +7,5 @@ public interface ISubscriberRepository
     Task<IEnumerable<Subscriber>> GetAllAsync();
     Task AddAsync(Subscriber subscriber);
     Task UpdateAsync(Subscriber subscriber);
-    Task DeleteAsync(int id);
+    Task<bool> DeleteAsync(int id);
 }

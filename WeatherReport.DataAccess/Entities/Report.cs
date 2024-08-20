@@ -4,8 +4,9 @@ public class Report : BaseEntity
 {
     public string DayOfWeek { get; set; }
     public string PartOfDay { get; set; }
-    public List<Forecast> Forecasts { get; set; }
+    public List<WeatherDetail> WeatherDetails { get; set; }
+
+    public int ForecastId { get; set; }
+    public Forecast Forecast { get; set; }
     
-    public int SubscriberId { get; set; }
-    public Subscriber Subscriber { get; set; }
 }
