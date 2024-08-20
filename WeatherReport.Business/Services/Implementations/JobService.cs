@@ -283,11 +283,12 @@ public class JobService(IEmailService emailService,
     }
     public async Task SaveHourlyReportAsync()
     {
-        // Example of how you might take a report, depending on your implementation
-        // var report = await weatherApiService.GetCurrentWeatherDataAsync("Baku");
-
-    
-        //     await reportService.CreateReportAsync(report);
-        
+        var subscribers = await service.SubscriberService.GetAllAsync();
+        foreach (var subscriber in subscribers)
+        {
+            var forecast = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
+            forecast.SubscriberId = subscriber.Id;
+            await service.ForecastService.AddAsync(forecast);
+        }
     }
 }
