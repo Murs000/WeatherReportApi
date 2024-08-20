@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using WeatherReport.DataAccess.Entities;
 using WeatherReport.DataAccess.Enums;
 
@@ -6,7 +8,12 @@ namespace WeatherReport.DataAccess;
 
 public class WeatherReportDb : DbContext
 {
-    public WeatherReportDb(DbContextOptions<WeatherReportDb> options) : base(options) {}
+    private readonly IConfiguration _configuration;
+    public WeatherReportDb(DbContextOptions<WeatherReportDb> options, IConfiguration configuration) 
+        : base(options)
+    {
+        _configuration = configuration;
+    }
     public DbSet<Report> Report => Set<Report>();
     public DbSet<Subscriber> Subscribers => Set<Subscriber>();
     public DbSet<WeatherDetail> WeatherDetails => Set<WeatherDetail>();
@@ -15,6 +22,26 @@ public class WeatherReportDb : DbContext
     // Configuring entity relationships and properties
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Retrieve admin user details from appsettings.json
+        var adminUser = _configuration.GetSection("AdminUser").Get<Subscriber>();
+
+        // Create admin user from configuration
+        modelBuilder.Entity<Subscriber>().HasData(
+            new Subscriber
+            {
+                Id = 1, // Ensure the Id is set to match your primary key constraints
+                Name = adminUser.Name,
+                Surname = adminUser.Surname,
+                Email = adminUser.Email,
+                CityOfResidence = adminUser.CityOfResidence,
+                SubscriptionType = adminUser.SubscriptionType,
+                SubscriptionDate = DateTime.Now.ToUniversalTime(),
+                CreationDate = DateTime.Now.ToUniversalTime(),
+                ModifyDate = DateTime.Now.ToUniversalTime(),
+                IsDeleted = false
+            }
+        );
+        
         // Eagerly load all related entities
         modelBuilder.Entity<Report>()
                 .Navigation(r => r.WeatherDetails)
