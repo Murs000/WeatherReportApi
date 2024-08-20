@@ -1,9 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace WeatherReport.DataAccess.Entities;
 
 public class Forecast : BaseEntity
 {
-    public string Description { get; set; }
-    public string Icon { get; set; }
+    public List<Report> Reports { get; set; }
+    
+    public int SubscriberId { get; set; }
+    public Subscriber Subscriber { get; set; }
 }
