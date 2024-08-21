@@ -48,4 +48,3 @@
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Quartz.Extensions.DependencyInjection.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Quartz.Extensions.Hosting.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/obj/Debug/net8.0/WeatherReport.API.sourcelink.json
-/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Microsoft.Extensions.Configuration.Binder.dll

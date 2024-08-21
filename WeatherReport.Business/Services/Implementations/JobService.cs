@@ -284,9 +284,11 @@ public class JobService(IEmailService emailService,
     public async Task SaveHourlyReportAsync()
     {
         var subscribers = await service.SubscriberService.GetAllAsync();
-        foreach (var subscriber in subscribers)
+        // Not take admins city
+        var cities = subscribers.Where(s=>s.Id != 1).Select(s=>s.CityOfResidence).Distinct();
+        foreach (var city in cities)
         {
-            var forecast = await weatherApiService.GetCurrentWeatherDataAsync(subscriber.CityOfResidence);
+            var forecast = await weatherApiService.GetCurrentWeatherDataAsync(city);
             forecast.SubscriberId = 1;
             await service.ForecastService.AddAsync(forecast);
         }
