@@ -4,6 +4,7 @@ namespace WeatherReport.DataAccess.Entities;
 
 public class BaseEntity
 {
+    // Same fields and metods for all entities
     [Key]
     public int Id { get; set; }
     public DateTime CreationDate { get; set; }

@@ -9,7 +9,6 @@ namespace WeatherReport.Business.Services.Implementations;
 
 public class SubscriberService(IRepositoryUnitOfWork repository, IMapper mapper) : ISubscriberService
 {
-    
     public async Task<IEnumerable<SubscriberDTO>> GetAllAsync(SubscriptionType? subscriptionType = null, string? city = null)
     {
         var subscribers = await repository.SubscriberRepository.GetAllAsync();
@@ -22,13 +21,11 @@ public class SubscriberService(IRepositoryUnitOfWork repository, IMapper mapper)
 
         return mapper.Map<IEnumerable<SubscriberDTO>>(subscribers);
     }
-
     public async Task<SubscriberDTO> GetByIdAsync(int id)
     {
         var subscriber = await repository.SubscriberRepository.GetByIdAsync(id);
         return mapper.Map<SubscriberDTO>(subscriber);
     }
-
     public async Task<SubscriberDTO> AddAsync(SubscriberDTO subscriberDto)
     {
         var subscriber = mapper.Map<Subscriber>(subscriberDto);
@@ -43,7 +40,6 @@ public class SubscriberService(IRepositoryUnitOfWork repository, IMapper mapper)
         await repository.SubscriberRepository.UpdateAsync(subscriber);
         return mapper.Map<SubscriberDTO>(subscriber);
     }
-
     public async Task<bool> DeleteAsync(int id)
     {
         return await repository.SubscriberRepository.DeleteAsync(id);

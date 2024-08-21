@@ -27,5 +27,4 @@ public class JobController(IJobService jobService) : ControllerBase
         await jobService.SendWeeklyEmailAsync();
         return Ok("Email sent successfully.");
     }
-    //TODO: email kime gedib report;
 }

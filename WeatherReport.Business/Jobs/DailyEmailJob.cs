@@ -7,7 +7,6 @@ using WeatherReport.DataAccess.Enums;
 namespace WeatherReport.Business.Jobs;
 public class DailyEmailJob(IJobService jobService) : IJob
 {
-
     public async Task Execute(IJobExecutionContext context)
     {
         await jobService.SendDailyEmailAsync();
