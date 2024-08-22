@@ -55,6 +55,7 @@ builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 // Register background jobs
 builder.Services.AddScoped<DailyEmailJob>();
 builder.Services.AddScoped<HourlyReportJob>();
+builder.Services.AddScoped<WeeklyEmailJob>();
 
 // Register the repositories and services
 builder.Services.AddScoped<IRepositoryUnitOfWork, RepositoryUnitOfWork>();

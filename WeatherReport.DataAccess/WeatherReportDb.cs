@@ -55,7 +55,7 @@ public class WeatherReportDb : DbContext
             .WithOne(w => w.Report)
             .HasForeignKey(w=> w.ReportId);
 
-        // Subscriber configuration
+        // Forecast configuration
         modelBuilder.Entity<Forecast>()
             .HasMany(s => s.Reports)
             .WithOne(r => r.Forecast)
