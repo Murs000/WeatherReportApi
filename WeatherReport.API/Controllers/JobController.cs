@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
 using WeatherReport.Business.Services.Interfaces;
@@ -7,6 +8,7 @@ namespace WeatherReport.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class JobController(IJobService jobService) : ControllerBase
 {
     [HttpPost("save-hourly")]

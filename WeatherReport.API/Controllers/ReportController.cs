@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
@@ -5,6 +6,7 @@ using WeatherReport.Business.Services.Interfaces;
 namespace WeatherReport.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class ReportController (IServiceUnitOfWork service) : ControllerBase
 {
     [HttpGet]
