@@ -20,6 +20,9 @@ public class WeatherReportDb : DbContext
             new Subscriber
             {
                 Id = 1, // Ensure the Id is set to match your primary key constraints
+                UserName = "admin",
+                PasswordHash = "",
+                UserRole = UserRole.Admin,
                 Name = "Admin",
                 Surname = "User",
                 Email = "admin@example.com",
@@ -64,6 +67,10 @@ public class WeatherReportDb : DbContext
         // Set SubscriptionType enum to be stored as a string
         modelBuilder.Entity<Subscriber>()
             .Property(s => s.SubscriptionType)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<Subscriber>()
+            .Property(s => s.UserRole)
             .HasConversion<string>();
 
         // Apply global query filters for soft delete
