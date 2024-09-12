@@ -21,7 +21,8 @@ public class WeatherReportDb : DbContext
             {
                 Id = 1, // Ensure the Id is set to match your primary key constraints
                 UserName = "admin",
-                PasswordHash = "",
+                PasswordHash = "RLxOtsWawDlESSGFfMzkTYqlW5x11dGfGR0xB2LcRTg=",
+                PasswordSalt = "40cc50e45cba25c463a4130cd22e7e14",
                 UserRole = UserRole.Admin,
                 Name = "Admin",
                 Surname = "User",
