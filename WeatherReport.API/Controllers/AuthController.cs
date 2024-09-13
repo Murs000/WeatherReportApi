@@ -43,15 +43,26 @@ public class AuthController (IEmailService emailService,IServiceUnitOfWork servi
         var encodedToken = Uri.EscapeDataString(user.RefreshToken);
         await emailService.SendEmailAsync(user.Email, "OTP email",$"Please confirm your email by clicking the link: {"http://localhost:5109"}/api/Auth/confirm-email?username={user.Username}&token={encodedToken}");
     }
-    
+
     [HttpPost("login")]
     public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
     {
         var users = await service.SubscriberService.GetAllAsync();
-        var user = users.First(u => u.Username == loginDTO.Username && u.IsActivated == true) ?? new SubscriberDTO();
+        var user = users.First(u => u.Username == loginDTO.Username && u.IsActivated == true);
+        var refreshToken = GenerateRefreshToken();
+        if(user != null)
+        {
+            user.RefreshToken = refreshToken;
+            await service.SubscriberService.UpdateAsync(user);
+        }
         if(VerifyPassword(loginDTO.Password,user.PasswordHash,user.PasswordSalt))
         {
-            return Ok(GenerateJwtToken(user.Id,user.Username,user.UserRole));
+            return Ok(new UserResponceDTO()
+            {
+                UserName = user.Username,
+                AuthToken = GenerateJwtToken(user.Id,user.Username,user.UserRole),
+                RefreshToken = GenerateRefreshToken()
+            });
         }
         return BadRequest("Incorrect password or username");
     }
@@ -71,23 +82,76 @@ public class AuthController (IEmailService emailService,IServiceUnitOfWork servi
 
         return Ok("Registration successful. Please check your email to confirm.");
     }
-    // [HttpPost("refresh-token")]
-    // public IActionResult RefreshToken([FromBody] RefreshTokenRequest model)
-    // {
-    //     var user = users.FirstOrDefault(u => u.Username == model.Username && u.RefreshToken == model.RefreshToken);
-    //     if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
-    //     {
-    //         return Unauthorized("Invalid refresh token or token has expired.");
-    //     }
+    [HttpPost("refresh-token")]
+public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO model)
+{
+    var isValid = ValidateRefreshToken(model.RefreshToken);
+    if (!isValid)
+    {
+        return Unauthorized("Invalid or expired refresh token.");
+    }
 
-    //     var newAccessToken = GenerateJwtToken(user);
-    //     var newRefreshToken = GenerateRefreshToken();
+    var users = await service.SubscriberService.GetAllAsync();
+    var user = users.First(u=> u.Username == model.Username);
+    if (user == null || user.RefreshToken != model.RefreshToken)
+    {
+        return Unauthorized("Invalid refresh token.");
+    }
 
-    //     user.RefreshToken = newRefreshToken;
-    //     user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+    var newAccessToken = GenerateJwtToken(user.Id, user.Username, user.UserRole);
+    var newRefreshToken = GenerateRefreshToken();
 
-    //     return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
-    // }
+    // Update the user with the new refresh token
+    user.RefreshToken = newRefreshToken;
+    await service.SubscriberService.UpdateAsync(user);
+
+    return Ok(new UserResponceDTO()
+    {
+        UserName = user.Username,
+        AuthToken = newAccessToken,
+        RefreshToken = newRefreshToken
+    });
+}
+    private string GenerateRefreshToken()
+{
+    var claims = new[]
+    {
+        new Claim(JwtRegisteredClaimNames.Exp, DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds().ToString())
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var token = new JwtSecurityToken(
+        claims: claims,
+        expires: DateTime.UtcNow.AddHours(3).AddMinutes(10),
+        signingCredentials: creds
+    );
+
+    return new JwtSecurityTokenHandler().WriteToken(token);
+}
+private bool ValidateRefreshToken(string token)
+{
+    var handler = new JwtSecurityTokenHandler();
+
+    // Decode and validate the token manually
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
+    var validationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = key
+    };
+
+    // Token validation result
+    SecurityToken validatedToken;
+    handler.ValidateToken(token, validationParameters, out validatedToken);
+
+    // Check if the token is valid and not expired
+    return validatedToken != null;
+}
     private (string passwordHash, string passwordSalt) HashPassword(string password)
         {
             using var hmac = new HMACSHA256();
@@ -124,13 +188,4 @@ public class AuthController (IEmailService emailService,IServiceUnitOfWork servi
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    private string GenerateRefreshToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-    }
 }

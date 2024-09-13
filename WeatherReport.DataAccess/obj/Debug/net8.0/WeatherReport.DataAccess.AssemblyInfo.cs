@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WeatherReport.DataAccess")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cdfed09652032c7286e796d9272491b1a9bdd1c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fbc71aa7d329e3b08549d007c473bf9cc428cf0f")]
 [assembly: System.Reflection.AssemblyProductAttribute("WeatherReport.DataAccess")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WeatherReport.DataAccess")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
