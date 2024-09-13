@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using WeatherReport.Business.DTOs;
@@ -16,176 +17,59 @@ namespace WeatherReport.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]
-public class AuthController (IEmailService emailService,IServiceUnitOfWork service,IMapper mapper) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
-    [HttpGet("confirm-email")]
-    public async Task<IActionResult> SendOTPEmail(string username, string token)
-    {
-        var users = await service.SubscriberService.GetAllAsync();
-        var user = users.FirstOrDefault(u => u.Username == username);
-
-        var decodedToken = Uri.UnescapeDataString(token);
-
-        if (user.RefreshToken != decodedToken)
-        {
-            return BadRequest("Invalid confirmation link.");
-        }
-
-        user.IsActivated = true;
-        user.RefreshToken = null;  // Clear token after confirmation
-
-        await service.SubscriberService.UpdateAsync(user); 
-
-        return Ok("Email confirmed. You can now log in.");
-    }
-    private async Task SendConfirmationEmailAsync(SubscriberDTO user)
-    {
-        var encodedToken = Uri.EscapeDataString(user.RefreshToken);
-        await emailService.SendEmailAsync(user.Email, "OTP email",$"Please confirm your email by clicking the link: {"http://localhost:5109"}/api/Auth/confirm-email?username={user.Username}&token={encodedToken}");
-    }
-
     [HttpPost("login")]
     public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
     {
-        var users = await service.SubscriberService.GetAllAsync();
-        var user = users.First(u => u.Username == loginDTO.Username && u.IsActivated == true);
-        var refreshToken = GenerateRefreshToken();
-        if(user != null)
+        var user = await userService.LogIn(loginDTO);
+
+        if (user == null)
         {
-            user.RefreshToken = refreshToken;
-            await service.SubscriberService.UpdateAsync(user);
+            return BadRequest("Incorrect password or username");
         }
-        if(VerifyPassword(loginDTO.Password,user.PasswordHash,user.PasswordSalt))
-        {
-            return Ok(new UserResponceDTO()
-            {
-                UserName = user.Username,
-                AuthToken = GenerateJwtToken(user.Id,user.Username,user.UserRole),
-                RefreshToken = GenerateRefreshToken()
-            });
-        }
-        return BadRequest("Incorrect password or username");
+        return Ok(user);
     }
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
-        var subscriberDTO = mapper.Map<SubscriberDTO>(registerDTO);
-        (var passwordHash, var passwordSalt) = HashPassword(registerDTO.Password);
-
-        subscriberDTO.PasswordHash = passwordHash;
-        subscriberDTO.PasswordSalt = passwordSalt;
-
-        subscriberDTO.RefreshToken = GenerateRefreshToken();
-
-        var subscriber = await service.SubscriberService.AddAsync(subscriberDTO);
-        await SendConfirmationEmailAsync(subscriberDTO);
+        await userService.Register(registerDTO);
 
         return Ok("Registration successful. Please check your email to confirm.");
     }
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmOTP(string username, string token)
+    {
+        if (await userService.ConfirmOTP(username, token))
+        {
+            return Ok("Email confirmed. You can now log in.");
+        }
+        return BadRequest("Invalid confirmation link.");
+    }
     [HttpPost("refresh-token")]
-public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO model)
-{
-    var isValid = ValidateRefreshToken(model.RefreshToken);
-    if (!isValid)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO dTO)
     {
-        return Unauthorized("Invalid or expired refresh token.");
+        var user = userService.RefreshToken(dTO);
+        if(user != null)
+        {
+            return Ok(user);
+        }
+        return BadRequest();
     }
-
-    var users = await service.SubscriberService.GetAllAsync();
-    var user = users.First(u=> u.Username == model.Username);
-    if (user == null || user.RefreshToken != model.RefreshToken)
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetPassword(string username)
     {
-        return Unauthorized("Invalid refresh token.");
+        await userService.ForgetPassword(username);
+
+        return Ok("Check your email for OTP");
     }
-
-    var newAccessToken = GenerateJwtToken(user.Id, user.Username, user.UserRole);
-    var newRefreshToken = GenerateRefreshToken();
-
-    // Update the user with the new refresh token
-    user.RefreshToken = newRefreshToken;
-    await service.SubscriberService.UpdateAsync(user);
-
-    return Ok(new UserResponceDTO()
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
     {
-        UserName = user.Username,
-        AuthToken = newAccessToken,
-        RefreshToken = newRefreshToken
-    });
-}
-    private string GenerateRefreshToken()
-{
-    var claims = new[]
-    {
-        new Claim(JwtRegisteredClaimNames.Exp, DateTimeOffset.UtcNow.AddMinutes(10).ToUnixTimeSeconds().ToString())
-    };
-
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-    var token = new JwtSecurityToken(
-        claims: claims,
-        expires: DateTime.UtcNow.AddHours(3).AddMinutes(10),
-        signingCredentials: creds
-    );
-
-    return new JwtSecurityTokenHandler().WriteToken(token);
-}
-private bool ValidateRefreshToken(string token)
-{
-    var handler = new JwtSecurityTokenHandler();
-
-    // Decode and validate the token manually
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
-    var validationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = key
-    };
-
-    // Token validation result
-    SecurityToken validatedToken;
-    handler.ValidateToken(token, validationParameters, out validatedToken);
-
-    // Check if the token is valid and not expired
-    return validatedToken != null;
-}
-    private (string passwordHash, string passwordSalt) HashPassword(string password)
+        if(await userService.ResetPassword(resetPasswordDTO))
         {
-            using var hmac = new HMACSHA256();
-            var salt = hmac.Key;
-            var passwordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-            var passwordSalt = Convert.ToBase64String(salt);
-            return (passwordHash, passwordSalt);
+            return Ok("Password reseted");
         }
-
-        private bool VerifyPassword(string password, string storedHash, string storedSalt)
-        {
-            using var hmac = new HMACSHA256(Convert.FromBase64String(storedSalt));
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(computedHash) == storedHash;
-        }
-
-        private string GenerateJwtToken(int userId, string username, string role)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(180),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+        return BadRequest(); 
+    }
 }
