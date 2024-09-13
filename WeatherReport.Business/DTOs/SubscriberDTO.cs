@@ -8,6 +8,8 @@ public class SubscriberDTO
     public string Username { get; set; }
     public string PasswordHash { get; set; }
     public string PasswordSalt{ get; set; }
+    public string? RefreshToken { get; set; }
+    public bool IsActivated { get; set; }
     public string UserRole { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }

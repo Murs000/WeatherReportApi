@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -17,17 +18,37 @@ namespace WeatherReport.API.Controllers;
 [AllowAnonymous]
 public class AuthController (IEmailService emailService,IServiceUnitOfWork service,IMapper mapper) : ControllerBase
 {
-    [HttpPost("send-otp")]
-    public async Task<IActionResult> SendOTPEmail(string userEmail)
+    [HttpGet("confirm-email")]
+    public async Task<IActionResult> SendOTPEmail(string username, string token)
     {
-        await emailService.SendEmailAsync(userEmail, "OTP email", $"{1234}");
-        return Ok();
+        var users = await service.SubscriberService.GetAllAsync();
+        var user = users.FirstOrDefault(u => u.Username == username);
+
+        var decodedToken = Uri.UnescapeDataString(token);
+
+        if (user.RefreshToken != decodedToken)
+        {
+            return BadRequest("Invalid confirmation link.");
+        }
+
+        user.IsActivated = true;
+        user.RefreshToken = null;  // Clear token after confirmation
+
+        await service.SubscriberService.UpdateAsync(user); 
+
+        return Ok("Email confirmed. You can now log in.");
     }
+    private async Task SendConfirmationEmailAsync(SubscriberDTO user)
+    {
+        var encodedToken = Uri.EscapeDataString(user.RefreshToken);
+        await emailService.SendEmailAsync(user.Email, "OTP email",$"Please confirm your email by clicking the link: {"http://localhost:5109"}/api/Auth/confirm-email?username={user.Username}&token={encodedToken}");
+    }
+    
     [HttpPost("login")]
     public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
     {
         var users = await service.SubscriberService.GetAllAsync();
-        var user = users.First(u => u.Username == loginDTO.Username);
+        var user = users.First(u => u.Username == loginDTO.Username && u.IsActivated == true) ?? new SubscriberDTO();
         if(VerifyPassword(loginDTO.Password,user.PasswordHash,user.PasswordSalt))
         {
             return Ok(GenerateJwtToken(user.Id,user.Username,user.UserRole));
@@ -43,10 +64,30 @@ public class AuthController (IEmailService emailService,IServiceUnitOfWork servi
         subscriberDTO.PasswordHash = passwordHash;
         subscriberDTO.PasswordSalt = passwordSalt;
 
-        var subscriber = await service.SubscriberService.AddAsync(subscriberDTO);
+        subscriberDTO.RefreshToken = GenerateRefreshToken();
 
-        return Ok(subscriber);
+        var subscriber = await service.SubscriberService.AddAsync(subscriberDTO);
+        await SendConfirmationEmailAsync(subscriberDTO);
+
+        return Ok("Registration successful. Please check your email to confirm.");
     }
+    // [HttpPost("refresh-token")]
+    // public IActionResult RefreshToken([FromBody] RefreshTokenRequest model)
+    // {
+    //     var user = users.FirstOrDefault(u => u.Username == model.Username && u.RefreshToken == model.RefreshToken);
+    //     if (user == null || user.RefreshTokenExpiryTime <= DateTime.Now)
+    //     {
+    //         return Unauthorized("Invalid refresh token or token has expired.");
+    //     }
+
+    //     var newAccessToken = GenerateJwtToken(user);
+    //     var newRefreshToken = GenerateRefreshToken();
+
+    //     user.RefreshToken = newRefreshToken;
+    //     user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+
+    //     return Ok(new { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
+    // }
     private (string passwordHash, string passwordSalt) HashPassword(string password)
         {
             using var hmac = new HMACSHA256();
@@ -77,10 +118,19 @@ public class AuthController (IEmailService emailService,IServiceUnitOfWork servi
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddHours(3),
+                expires: DateTime.Now.AddMinutes(180),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+    private string GenerateRefreshToken()
+    {
+        var randomNumber = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+    }
 }
