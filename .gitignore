@@ -91,3 +91,7 @@ out/
 .idea/
 *.user
 *.userprefs
+
+# Ignore build outputs
+bin/
+obj/
