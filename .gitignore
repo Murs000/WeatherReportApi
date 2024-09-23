@@ -1,0 +1,93 @@
+# Ignore .NET build outputs
+bin/
+obj/
+out/
+
+# Ignore project-specific files (Mac and Windows)
+.DS_Store
+Thumbs.db
+
+# Ignore user-specific files (Visual Studio Code)
+.vscode/
+.vscode/*
+
+# Ignore Rider/JetBrains files
+.idea/
+*.suo
+*.user
+*.userosscache
+*.userprefs
+
+# Ignore VSCode workspace files
+*.code-workspace
+
+# Ignore ASP.NET temporary files
+*.publish.xml
+
+# Ignore Logs
+*.log
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore NuGet Packages
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+*.snupkg
+
+# Ignore environment settings
+.env
+.env.*
+
+# Ignore local database files
+*.mdf
+*.ldf
+
+# Ignore SQLite files
+*.db
+*.sqlite
+*.sqlite3
+
+# Ignore Assembly Info and Generated Files (C# auto-generated files)
+Properties/AssemblyInfo.cs
+**/GeneratedAssemblyInfo.cs
+*.g.cs
+*.g.i.cs
+
+# Ignore autogen assembly attributes for versioning
+**/Properties/AssemblyInfo.cs
+!**/Properties/AssemblyInfo.*.cs
+
+# Ignore Mac system files
+.DS_Store
+.Trashes
+
+# Ignore temporary files and caches
+*.tmp
+*.cache
+*.bak
+*.swp
+*.swo
+
+# Ignore Visual Studio auto-generated files (for Windows)
+.vs/
+.vscode/
+*.suo
+*.sln.docstates
+
+# Ignore Recycle Bin
+$RECYCLE.BIN/
+
+# Ignore WebAssembly build outputs
+wwwroot/
+dist/
+out/
+
+# Ignore IDE-based generated files
+.idea/
+*.user
+*.userprefs
