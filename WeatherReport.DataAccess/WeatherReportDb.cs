@@ -23,6 +23,7 @@ public class WeatherReportDb : DbContext
                 UserName = "admin",
                 PasswordHash = "RLxOtsWawDlESSGFfMzkTYqlW5x11dGfGR0xB2LcRTg=",
                 PasswordSalt = "40cc50e45cba25c463a4130cd22e7e14",
+                IsActivated = true,
                 UserRole = UserRole.Admin,
                 Name = "Admin",
                 Surname = "User",

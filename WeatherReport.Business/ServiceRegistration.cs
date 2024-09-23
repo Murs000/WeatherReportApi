@@ -64,6 +64,10 @@ public static class ServiceRegistration
         services.AddScoped<IStatisticsService, StatisticsService>();
 
         services.AddScoped<IJobService, JobService>();
+
+        services.AddScoped<IAuthService, AuthService>();
+
+        services.AddScoped<IUserService, UserService>();
     }
 
     public static void AddAppMappers(this IServiceCollection services)

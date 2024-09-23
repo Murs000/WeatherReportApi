@@ -8,7 +8,7 @@ public class SubscriberRepository(WeatherReportDb context) : ISubscriberReposito
 {
     public async Task<IEnumerable<Subscriber>> GetAllAsync()
     {
-        return await context.Subscribers.ToListAsync();
+        return await context.Subscribers.AsNoTracking().ToListAsync();
     }
     
     public async Task<Subscriber> GetByIdAsync(int id)

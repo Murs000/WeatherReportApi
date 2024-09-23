@@ -1,9 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using WeatherReport.Business.DTOs;
@@ -15,72 +17,70 @@ namespace WeatherReport.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]
-public class AuthController (IEmailService emailService,IServiceUnitOfWork service,IMapper mapper) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
-    [HttpPost("send-otp")]
-    public async Task<IActionResult> SendOTPEmail(string userEmail)
-    {
-        await emailService.SendEmailAsync(userEmail, "OTP email", $"{1234}");
-        return Ok();
-    }
     [HttpPost("login")]
     public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
     {
-        var users = await service.SubscriberService.GetAllAsync();
-        var user = users.First(u => u.Username == loginDTO.Username);
-        if(VerifyPassword(loginDTO.Password,user.PasswordHash,user.PasswordSalt))
+        var user = await userService.LogIn(loginDTO);
+
+        if (user == null)
         {
-            return Ok(GenerateJwtToken(user.Id,user.Username,user.UserRole));
+            return BadRequest("Incorrect password or username");
         }
-        return BadRequest("Incorrect password or username");
+        return Ok(user);
     }
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterDTO registerDTO)
+    public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
-        var subscriberDTO = mapper.Map<SubscriberDTO>(registerDTO);
-        (var passwordHash, var passwordSalt) = HashPassword(registerDTO.Password);
+        await userService.Register(registerDTO);
 
-        subscriberDTO.PasswordHash = passwordHash;
-        subscriberDTO.PasswordSalt = passwordSalt;
-
-        var subscriber = await service.SubscriberService.AddAsync(subscriberDTO);
-
-        return Ok(subscriber);
+        return Ok("Registration successful. Please check your email to confirm.");
     }
-    private (string passwordHash, string passwordSalt) HashPassword(string password)
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> ConfirmOTP(string username, string token)
+    {
+        if (await userService.ConfirmOTP(username, token))
         {
-            using var hmac = new HMACSHA256();
-            var salt = hmac.Key;
-            var passwordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-            var passwordSalt = Convert.ToBase64String(salt);
-            return (passwordHash, passwordSalt);
+            return Ok("Email confirmed. You can now log in.");
         }
+        return BadRequest("Invalid confirmation link.");
+    }
 
-        private bool VerifyPassword(string password, string storedHash, string storedSalt)
+    [HttpPost("confirm-otp")]
+    public async Task<IActionResult> ConfirmPasswordOTP(string username, string token)
+    {
+        if (await userService.ConfirmOTP(username, token))
         {
-            using var hmac = new HMACSHA256(Convert.FromBase64String(storedSalt));
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(computedHash) == storedHash;
+            return Ok("Email confirmed. You can now log in.");
         }
+        return BadRequest("Invalid confirmation link.");
+    }
 
-        private string GenerateJwtToken(int userId, string username, string role)
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO dTO)
+    {
+        var user = userService.RefreshToken(dTO);
+        if(user != null)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU="));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.Now.AddHours(3),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Ok(user);
         }
+        return BadRequest();
+    }
+    [HttpPost("forget-password")]
+    public async Task<IActionResult> ForgetPassword(string username)
+    {
+        await userService.ForgetPassword(username);
+
+        return Ok("Check your email for OTP");
+    }
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
+    {
+        if(await userService.ResetPassword(resetPasswordDTO))
+        {
+            return Ok("Password reseted");
+        }
+        return BadRequest(); 
+    }
 }
