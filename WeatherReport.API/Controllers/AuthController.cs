@@ -46,6 +46,17 @@ public class AuthController(IUserService userService) : ControllerBase
         }
         return BadRequest("Invalid confirmation link.");
     }
+
+    [HttpPost("confirm-otp")]
+    public async Task<IActionResult> ConfirmPasswordOTP(string username, string token)
+    {
+        if (await userService.ConfirmOTP(username, token))
+        {
+            return Ok("Email confirmed. You can now log in.");
+        }
+        return BadRequest("Invalid confirmation link.");
+    }
+
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO dTO)
     {

@@ -105,11 +105,6 @@ public class UserService(IEmailService emailService, IServiceUnitOfWork service,
         var users = await service.SubscriberService.GetAllAsync();
         var user = users.FirstOrDefault(u => u.Username == resetPasswordDTO.Username);
 
-        if (user.RefreshToken != resetPasswordDTO.Token && !authService.ValidateEmailToken(resetPasswordDTO.Token))
-        {
-            return false;
-        }
-
         (string passwordHash, string passwordSalt) = authService.HashPassword(resetPasswordDTO.Password);
 
         user.PasswordHash = passwordHash;
