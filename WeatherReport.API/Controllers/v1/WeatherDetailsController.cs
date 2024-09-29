@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 
-namespace WeatherReport.API.Controllers;
+namespace WeatherReport.API.Controllers.v1;
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [Authorize(Roles = "Admin")]
 public class WeatherDetailController (IServiceUnitOfWork service) : ControllerBase
 {

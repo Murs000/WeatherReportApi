@@ -12,10 +12,12 @@ using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 using WeatherReport.DataAccess.Entities;
 
-namespace WeatherReport.API.Controllers;
+namespace WeatherReport.API.Controllers.v1;
 
 [ApiController]
-[Route("api/[controller]")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
 [AllowAnonymous]
 public class AuthController(IUserService userService) : ControllerBase
 {

@@ -8,6 +8,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddSwaggerGen(c=>
 {
+    // Generate Swagger documents for different API versions
+    var provider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+
+    foreach (var description in provider.ApiVersionDescriptions)
+    {
+        c.SwaggerDoc(description.GroupName, new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+            Title = $"Weather API {description.ApiVersion}",
+            Version = description.ApiVersion.ToString(),
+            Description = $"A simple Weather API - Version {description.ApiVersion}"
+        });
+    }
+
+    // Optional: Include XML comments if you have them for better Swagger documentation
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    c.IncludeXmlComments(xmlPath);
+
     var securityScheme = new OpenApiSecurityScheme
     {
         Name = "JWT Authentication",
@@ -60,6 +81,20 @@ builder.Services.AddSwaggerGen(c=>
     c.AddSecurityRequirement(securityRequirement);
 });
 
+// Add API Versioning
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0); // default version: v1.0
+    options.ReportApiVersions = true; // shows available versions in the response headers
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // This formats the version as "v1", "v2", etc.
+    options.SubstituteApiVersionInUrl = true;  // Replace version in URL if needed
+});
+
 builder.Services.AddAppSettings(builder.Configuration);
 
 builder.Services.AddAppMappers();
@@ -79,7 +114,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+    });
 
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<WeatherReportDb>();
