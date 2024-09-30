@@ -18,7 +18,7 @@ namespace WeatherReport.Business.Services.Implementations
             _jwtSettings = jwtSettings.Value;
         }
 
-        // Hash password without async, since it's a CPU-bound operation
+        // Hash password
         public (string passwordHash, string passwordSalt) HashPassword(string password)
         {
             using var hmac = new HMACSHA256();
@@ -28,7 +28,7 @@ namespace WeatherReport.Business.Services.Implementations
             return (passwordHash, passwordSalt);
         }
 
-        // Verify password without async
+        // Verify password
         public bool VerifyPassword(string password, string storedHash, string storedSalt)
         {
             using var hmac = new HMACSHA256(Convert.FromBase64String(storedSalt));
@@ -51,7 +51,7 @@ namespace WeatherReport.Business.Services.Implementations
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddHours(4).AddMinutes(_jwtSettings.AccessExpireAt),
+                expires: DateTime.UtcNow.AddMinutes(_jwtSettings.AccessExpireAt),
                 signingCredentials: creds
             );
 
@@ -64,7 +64,7 @@ namespace WeatherReport.Business.Services.Implementations
             return GenerateToken(_jwtSettings.RefreshKey, _jwtSettings.RefreshExpireAt);
         }
 
-        // Validate Refresh Token with expiration check
+        // Validate Refresh Token
         public bool ValidateRefreshToken(string token)
         {
             return ValidateToken(token, _jwtSettings.RefreshKey);
@@ -102,7 +102,7 @@ namespace WeatherReport.Business.Services.Implementations
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // Validate token without try-catch
+        // Validate token
         private bool ValidateToken(string token, string authKey)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -112,22 +112,22 @@ namespace WeatherReport.Business.Services.Implementations
             {
                 ValidateIssuer = false,
                 ValidateAudience = false,
-                ValidateLifetime = true, // Ensure lifetime validation
+                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = key
             };
 
-            // Validate the token
-            var validatedToken = handler.ValidateToken(token, validationParameters, out SecurityToken securityToken);
-            var jwtToken = securityToken as JwtSecurityToken;
+            try
+            {
+                var validatedToken = handler.ValidateToken(token, validationParameters, out SecurityToken securityToken);
+                var jwtToken = securityToken as JwtSecurityToken;
 
-            // If the token is expired or invalid, return false
-            if (jwtToken == null || jwtToken.ValidTo < DateTime.UtcNow)
+                return jwtToken != null && jwtToken.ValidTo >= DateTime.UtcNow;
+            }
+            catch (SecurityTokenException)
             {
                 return false;
             }
-
-            return true; // Token is valid
         }
     }
 }
