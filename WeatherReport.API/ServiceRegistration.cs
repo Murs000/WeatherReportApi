@@ -1,3 +1,5 @@
+using Swashbuckle.AspNetCore.Filters;
+using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Settings;
 
 namespace WeatherReport.API;
@@ -10,5 +12,13 @@ public static class ServiceRegistration
         services.Configure<QuartzSettings>(configuration.GetSection("QuartzSettings"));
         services.Configure<WeatherApiSettings>(configuration.GetSection("ExternalApi"));
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+    }
+
+    public static void AddSwaggerExcamples(this IServiceCollection services)
+    {
+        services.AddSwaggerExamplesFromAssemblyOf<LoginDTOExample>();
+        services.AddSwaggerExamplesFromAssemblyOf<ResetPasswordDTOExample>();
+        services.AddSwaggerExamplesFromAssemblyOf<RegisterDTOExample>();
+        services.AddSwaggerExamplesFromAssemblyOf<RefreshTokenDTOExample>();
     }
 }

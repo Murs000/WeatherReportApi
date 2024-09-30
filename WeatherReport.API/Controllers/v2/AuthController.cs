@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WeatherReport.API.Controllers.v2;
 
@@ -11,12 +12,11 @@ namespace WeatherReport.API.Controllers.v2;
 [AllowAnonymous]
 public class AuthController(IUserService userService) : ControllerBase
 {
-    /// <summary>
-    /// Authenticates a user and returns a token upon successful login.
-    /// </summary>
-    /// <param name="loginDTO">The login details including username and password.</param>
-    /// <returns>JWT token if successful; 401 Unauthorized if login fails.</returns>
+
     [HttpPost("login")]
+    [SwaggerOperation(Summary = "Log in a user", Description = "Authenticates a user and returns a JWT token.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Successfully logged in.", typeof(string))]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Incorrect password or username.")]
     public async Task<IActionResult> LogIn([FromBody] LoginDTO loginDTO)
     {
         var user = await userService.LogIn(loginDTO);
@@ -27,25 +27,19 @@ public class AuthController(IUserService userService) : ControllerBase
         return Ok(user);
     }
 
-    /// <summary>
-    /// Registers a new user in the system.
-    /// </summary>
-    /// <param name="registerDTO">The registration details including username, password, and email.</param>
-    /// <returns>A success message if registration is successful.</returns>
     [HttpPost("register")]
+    [SwaggerOperation(Summary = "Register a new user", Description = "Registers a new user in the system.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Registration successful. Please check your email to confirm.")]
     public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
     {
         await userService.Register(registerDTO);
         return Ok("Registration successful. Please check your email to confirm.");
     }
 
-    /// <summary>
-    /// Confirms the user's email using a token sent to the email address.
-    /// </summary>
-    /// <param name="username">The username of the user.</param>
-    /// <param name="token">The confirmation token sent via email.</param>
-    /// <returns>A success message if the email is confirmed; 400 Bad Request if the token is invalid.</returns>
     [HttpPost("confirm-email")]
+    [SwaggerOperation(Summary = "Confirm email", Description = "Confirms the user's email using a token sent to the email address.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Email confirmed. You can now log in.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid confirmation link.")]
     public async Task<IActionResult> ConfirmEmail(string username, string token)
     {
         if (await userService.ConfirmOTP(username, token))
@@ -55,13 +49,10 @@ public class AuthController(IUserService userService) : ControllerBase
         return BadRequest("Invalid confirmation link.");
     }
 
-    /// <summary>
-    /// Confirms the OTP for password reset.
-    /// </summary>
-    /// <param name="username">The username of the user.</param>
-    /// <param name="token">The OTP token.</param>
-    /// <returns>A success message if the OTP is confirmed; 400 Bad Request if the OTP is invalid.</returns>
     [HttpPost("confirm-otp")]
+    [SwaggerOperation(Summary = "Confirm OTP for password reset", Description = "Confirms the OTP for password reset.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "OTP confirmed. You can now reset your password.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid OTP.")]
     public async Task<IActionResult> ConfirmPasswordOTP(string username, string token)
     {
         if (await userService.ConfirmOTP(username, token))
@@ -71,12 +62,10 @@ public class AuthController(IUserService userService) : ControllerBase
         return BadRequest("Invalid OTP.");
     }
 
-    /// <summary>
-    /// Refreshes the JWT token using a valid refresh token.
-    /// </summary>
-    /// <param name="dto">The refresh token details.</param>
-    /// <returns>New JWT token if successful; 401 Unauthorized if the token is invalid.</returns>
     [HttpPost("refresh-token")]
+    [SwaggerOperation(Summary = "Refresh JWT token", Description = "Refreshes the JWT token using a valid refresh token.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Successfully refreshed the token.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Invalid refresh token.")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO dto)
     {
         var user = await userService.RefreshToken(dto);
@@ -87,24 +76,19 @@ public class AuthController(IUserService userService) : ControllerBase
         return Unauthorized("Invalid refresh token.");
     }
 
-    /// <summary>
-    /// Sends an OTP to the user's email to reset the password.
-    /// </summary>
-    /// <param name="username">The username of the user.</param>
-    /// <returns>A message indicating that the OTP has been sent.</returns>
     [HttpPost("forget-password")]
+    [SwaggerOperation(Summary = "Send OTP for password reset", Description = "Sends an OTP to the user's email to reset the password.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Check your email for the OTP.")]
     public async Task<IActionResult> ForgetPassword(string username)
     {
         await userService.ForgetPassword(username);
         return Ok("Check your email for the OTP.");
     }
 
-    /// <summary>
-    /// Resets the user's password using the provided OTP and new password details.
-    /// </summary>
-    /// <param name="resetPasswordDTO">The password reset details including the OTP, new password, and username.</param>
-    /// <returns>A success message if the password is reset; 400 Bad Request if the reset fails.</returns>
     [HttpPost("reset-password")]
+    [SwaggerOperation(Summary = "Reset user password", Description = "Resets the user's password using the provided OTP and new password details.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "Password has been reset.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Failed to reset password.")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
     {
         if (await userService.ResetPassword(resetPasswordDTO))

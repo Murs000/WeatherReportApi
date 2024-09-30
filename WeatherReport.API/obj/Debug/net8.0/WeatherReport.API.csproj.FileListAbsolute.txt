@@ -127,3 +127,7 @@
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.Versioning.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll
 /Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/WeatherReport.API.xml
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Swashbuckle.AspNetCore.Annotations.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Scrutor.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Swashbuckle.AspNetCore.Filters.dll
+/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/bin/Debug/net8.0/Swashbuckle.AspNetCore.Filters.Abstractions.dll

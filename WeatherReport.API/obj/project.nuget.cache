@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "qQYwLf+ynTU=",
+  "dgSpecHash": "zywnZiJRh+I=",
   "success": true,
   "projectFilePath": "/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/WeatherReport.API.csproj",
   "expectedPackageFiles": [
@@ -52,7 +52,11 @@
     "/Users/mursal/.nuget/packages/quartz/3.13.0/quartz.3.13.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/quartz.extensions.dependencyinjection/3.13.0/quartz.extensions.dependencyinjection.3.13.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/quartz.extensions.hosting/3.13.0/quartz.extensions.hosting.3.13.0.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/scrutor/3.3.0/scrutor.3.3.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore/6.8.0/swashbuckle.aspnetcore.6.8.0.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.annotations/6.8.0/swashbuckle.aspnetcore.annotations.6.8.0.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.filters/8.0.2/swashbuckle.aspnetcore.filters.8.0.2.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.filters.abstractions/8.0.2/swashbuckle.aspnetcore.filters.abstractions.8.0.2.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swagger/6.8.0/swashbuckle.aspnetcore.swagger.6.8.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.8.0/swashbuckle.aspnetcore.swaggergen.6.8.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.8.0/swashbuckle.aspnetcore.swaggerui.6.8.0.nupkg.sha512",

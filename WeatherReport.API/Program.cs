@@ -11,6 +11,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Reflection;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +47,9 @@ builder.Services.AddSwaggerGen(c=>
         });
     }
 
+    c.EnableAnnotations();
+    c.ExampleFilters(); // Enable example filters
+
     // Optional: Include XML comments if you have them for better Swagger documentation
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -80,6 +84,8 @@ builder.Services.AddSwaggerGen(c=>
 
     c.AddSecurityRequirement(securityRequirement);
 });
+
+builder.Services.AddSwaggerExamples();
 
 // Add API Versioning
 builder.Services.AddApiVersioning(options =>
