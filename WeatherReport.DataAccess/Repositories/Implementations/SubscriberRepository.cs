@@ -13,7 +13,7 @@ public class SubscriberRepository(WeatherReportDb context) : ISubscriberReposito
     
     public async Task<Subscriber> GetByIdAsync(int id)
     {
-        return await context.Subscribers.FirstOrDefaultAsync(r => r.Id == id);
+        return await context.Subscribers.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task AddAsync(Subscriber subscriber)

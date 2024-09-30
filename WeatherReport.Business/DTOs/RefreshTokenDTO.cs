@@ -1,6 +1,6 @@
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
-using WeatherReport.Business.Helpers;
+using WeatherReport.DataAccess.Helpers;
 
 namespace WeatherReport.Business.DTOs;
 

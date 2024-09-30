@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "zywnZiJRh+I=",
+  "dgSpecHash": "m41TVkRncn4=",
   "success": true,
   "projectFilePath": "/Users/mursal/Projects/WeatherReportApi/WeatherReport.API/WeatherReport.API.csproj",
   "expectedPackageFiles": [
@@ -57,8 +57,8 @@
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.annotations/6.8.0/swashbuckle.aspnetcore.annotations.6.8.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.filters/8.0.2/swashbuckle.aspnetcore.filters.8.0.2.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.filters.abstractions/8.0.2/swashbuckle.aspnetcore.filters.abstractions.8.0.2.nupkg.sha512",
-    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swagger/6.8.0/swashbuckle.aspnetcore.swagger.6.8.0.nupkg.sha512",
-    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.8.0/swashbuckle.aspnetcore.swaggergen.6.8.0.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swagger/6.8.1/swashbuckle.aspnetcore.swagger.6.8.1.nupkg.sha512",
+    "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.8.1/swashbuckle.aspnetcore.swaggergen.6.8.1.nupkg.sha512",
     "/Users/mursal/.nuget/packages/swashbuckle.aspnetcore.swaggerui/6.8.0/swashbuckle.aspnetcore.swaggerui.6.8.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/system.codedom/4.4.0/system.codedom.4.4.0.nupkg.sha512",
     "/Users/mursal/.nuget/packages/system.collections.immutable/6.0.0/system.collections.immutable.6.0.0.nupkg.sha512",

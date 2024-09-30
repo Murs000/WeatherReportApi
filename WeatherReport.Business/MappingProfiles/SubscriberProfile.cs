@@ -10,5 +10,6 @@ public class SubscriberProfile : Profile
     {
         CreateMap<Subscriber, SubscriberDTO>().ReverseMap();
         CreateMap<SubscriberDTO,RegisterDTO>().ReverseMap();
+        CreateMap<SubscriberDTO,UserDTO>().ReverseMap();
     }
 }

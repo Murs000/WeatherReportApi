@@ -1,11 +1,12 @@
-namespace WeatherReport.Business.Helpers;
+namespace WeatherReport.DataAccess.Helpers;
 
 [AttributeUsage(
     AttributeTargets.Class |
     AttributeTargets. Struct |
     AttributeTargets. Parameter | 
     AttributeTargets. Property |
-    AttributeTargets.Enum,
+    AttributeTargets.Enum |
+    AttributeTargets.Field,
     AllowMultiple = false)]
 public class SwaggerSchemaExampleAttribute : Attribute
 {
