@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace WeatherReport.API.Controllers.v2;
 

@@ -48,12 +48,14 @@ builder.Services.AddSwaggerGen(c=>
     }
 
     c.EnableAnnotations();
-    c.ExampleFilters(); // Enable example filters
+    c.SchemaFilter<SwaggerSchemaExampleFilter>();
 
-    // Optional: Include XML comments if you have them for better Swagger documentation
-    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    c.IncludeXmlComments(xmlPath);
+    // c.ExampleFilters(); // Enable example filters
+
+    // // Optional: Include XML comments if you have them for better Swagger documentation
+    // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    // c.IncludeXmlComments(xmlPath);
 
     var securityScheme = new OpenApiSecurityScheme
     {
@@ -84,8 +86,6 @@ builder.Services.AddSwaggerGen(c=>
 
     c.AddSecurityRequirement(securityRequirement);
 });
-
-builder.Services.AddSwaggerExamples();
 
 // Add API Versioning
 builder.Services.AddApiVersioning(options =>
