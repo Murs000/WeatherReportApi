@@ -85,7 +85,7 @@ builder.Services.AddSwaggerGen(c=>
 builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0); // default version: v1.0
+    options.DefaultApiVersion = new ApiVersion(2, 0); // default version: v1.0
     options.ReportApiVersions = true; // shows available versions in the response headers
 });
 
@@ -118,9 +118,15 @@ if (app.Environment.IsDevelopment())
     {
         var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
+        options.SwaggerEndpoint($"/swagger/v2/swagger.json", "Weather API V2");
+
+        // Add other versions if needed
         foreach (var description in provider.ApiVersionDescriptions)
         {
-            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+            if (description.GroupName != "v2") // Ensure we don't add v2 again
+            {
+                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", $"Weather API {description.GroupName.ToUpperInvariant()}");
+            }
         }
     });
 

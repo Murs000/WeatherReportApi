@@ -9,7 +9,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [AllowAnonymous]
-public class AuthV2Controller(IUserService userService) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
     /// <summary>
     /// Authenticates a user and returns a token upon successful login.
