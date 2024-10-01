@@ -68,6 +68,8 @@ public static class ServiceRegistration
         services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<IUserService, UserService>();
+
+        services.AddScoped<ICustomerService, CustomerService>();
     }
 
     public static void AddAppMappers(this IServiceCollection services)

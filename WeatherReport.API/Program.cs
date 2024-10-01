@@ -109,6 +109,8 @@ builder.Services.AddAppDB(builder.Configuration);
 
 builder.Services.AddHttpClient<IWeatherApiService, WeatherApiService>();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddQuartzJobs();
 
 builder.Services.AddAppRepositories();
