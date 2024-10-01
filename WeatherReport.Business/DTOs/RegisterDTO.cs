@@ -7,7 +7,7 @@ namespace WeatherReport.Business.DTOs;
 public class RegisterDTO
 {
     [SwaggerSchema("The unique identifier for the user.", Nullable = false)]
-    [SwaggerSchemaExample("1")]
+    [SwaggerSchemaExample(1)]
     public int Id { get; set; }
 
     [SwaggerSchema("The username chosen by the user.", Nullable = false)]

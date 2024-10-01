@@ -10,9 +10,9 @@ namespace WeatherReport.DataAccess.Helpers;
     AllowMultiple = false)]
 public class SwaggerSchemaExampleAttribute : Attribute
 {
-    public SwaggerSchemaExampleAttribute(string example)
+    public SwaggerSchemaExampleAttribute(object example)
     {
         Example = example;
     }
-    public string Example { get; set; }
+    public object Example { get; set; }
 }

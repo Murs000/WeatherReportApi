@@ -379,7 +379,10 @@
           "Swashbuckle.AspNetCore.SwaggerGen": "6.8.1"
         },
         "runtime": {
-          "WeatherReport.DataAccess.dll": {}
+          "WeatherReport.DataAccess.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }

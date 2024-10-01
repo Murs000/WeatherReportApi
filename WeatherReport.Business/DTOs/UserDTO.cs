@@ -19,6 +19,6 @@ public class UserDTO
     public string CityOfResidence { get; set; }
 
     [SwaggerSchema("The subscrition of the user.", Nullable = false)]
-    [SwaggerSchemaExample("Daily subscription")]
-    public string SubscriptionType { get; set; } 
+    [SwaggerSchemaExample(10)]
+    public SubscriptionType SubscriptionType { get; set; } 
 }

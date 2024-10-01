@@ -10,9 +10,6 @@ public class SubscriberProfile : Profile
     {
         CreateMap<Subscriber, SubscriberDTO>().ReverseMap();
         CreateMap<SubscriberDTO,RegisterDTO>().ReverseMap();
-        CreateMap<SubscriberDTO, UserDTO>()
-            .ForMember(dest => dest.SubscriptionType, opt => opt.MapFrom(src => src.SubscriptionType.ToString()))
-            .ReverseMap()
-            .ForMember(dest => dest.SubscriptionType, opt => opt.MapFrom(src => Enum.Parse<SubscriptionType>(src.SubscriptionType)));
+        CreateMap<SubscriberDTO, UserDTO>().ReverseMap();
     }
 }
