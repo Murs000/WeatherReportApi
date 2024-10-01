@@ -93,5 +93,5 @@ out/
 *.userprefs
 
 # Ignore build outputs
-bin/
-obj/
+**/bin/
+**/obj/
