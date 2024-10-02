@@ -7,4 +7,5 @@ public interface IStatisticsService
     public Task<IEnumerable<StatsDTO>> GetCityStats();
     public Task<Dictionary<string,int>> GetEmailStats();
     public Task<IEnumerable<StatsDTO>> GetSubsciptionsStats();
+    public Task<StatisticsDTO> GetStatisticsAsync();
 }

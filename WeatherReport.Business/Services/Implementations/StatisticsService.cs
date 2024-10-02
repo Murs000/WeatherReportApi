@@ -52,6 +52,35 @@ public class StatisticsService(IServiceUnitOfWork service) : IStatisticsService
 
         return stats;
     }
+    // for v2
+    public async Task<StatisticsDTO> GetStatisticsAsync()
+    {
+        var subscribers = await service.SubscriberService.GetAllAsync();
+
+        var subscriberTypeStats = subscribers
+            .GroupBy(s => s.SubscriptionType)
+            .Select(g => new SubscriberTypeStat
+            {
+                Type = g.Key.ToString(),
+                Count = g.Count()
+            });
+
+        var cityStats = subscribers
+            .GroupBy(s => s.CityOfResidence)
+            .Select(g => new CityStat
+            {
+                City = g.Key,
+                SubscriberCount = g.Count()
+            });
+
+        return new StatisticsDTO
+        {
+            SubscriberTypeStats = subscriberTypeStats,
+            CityStats = cityStats
+        };
+    }
+
+
     #region OdlCode
     // public async Task<IEnumerable<StatsDTO>> GetCityStats()
     // {

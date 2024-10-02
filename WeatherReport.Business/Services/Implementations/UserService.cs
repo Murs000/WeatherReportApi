@@ -6,6 +6,11 @@ namespace WeatherReport.Business.Services.Implementations;
 
 public class UserService(IEmailService emailService, IServiceUnitOfWork service,IAuthService authService, IMapper mapper) : IUserService
 {
+    // for v2
+    public async Task<List<UserDTO>> GetAllUsersAsync()
+    {
+        return mapper.Map<List<UserDTO>>(await service.SubscriberService.GetAllAsync());
+    }
     public async Task<UserResponceDTO> LogIn(LoginDTO loginDTO)
     {
         var users = await service.SubscriberService.GetAllAsync();
