@@ -22,4 +22,14 @@ public class StatisticsController() : ControllerBase
     {
         return Ok();
     }
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers()
+    {
+        return Ok();
+    }
+    [HttpPut("user-role")]
+    public async Task<IActionResult> ChangeUserRole()
+    {
+        return Ok();
+    }
 }
