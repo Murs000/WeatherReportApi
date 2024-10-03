@@ -7,9 +7,13 @@ namespace WeatherReport.Business.Services.Implementations;
 public class UserService(IEmailService emailService, IServiceUnitOfWork service,IAuthService authService, IMapper mapper) : IUserService
 {
     // for v2
-    public async Task<List<UserDTO>> GetAllUsersAsync()
+    public async Task<List<UserInfoDTO>> GetAllUsersAsync()
     {
-        return mapper.Map<List<UserDTO>>(await service.SubscriberService.GetAllAsync());
+        return mapper.Map<List<UserInfoDTO>>(await service.SubscriberService.GetAllAsync());
+    }
+    public async Task<UserInfoDTO> GetUserAsync(int id)
+    {
+        return mapper.Map<UserInfoDTO>(await service.SubscriberService.GetByIdAsync(id));
     }
     public async Task<UserResponceDTO> LogIn(LoginDTO loginDTO)
     {

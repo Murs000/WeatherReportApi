@@ -4,7 +4,8 @@ namespace WeatherReport.Business.Services.Interfaces;
 
 public interface IUserService
 {
-    public Task<List<UserDTO>> GetAllUsersAsync();
+    public Task<List<UserInfoDTO>> GetAllUsersAsync();
+    public Task<UserInfoDTO> GetUserAsync(int id);
     public Task<UserResponceDTO> LogIn(LoginDTO loginDTO);
     public Task Register(RegisterDTO registerDTO);
     public Task<bool> ConfirmOTP(string username, string token);

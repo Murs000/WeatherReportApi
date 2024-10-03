@@ -12,5 +12,6 @@ public class SubscriberProfile : Profile
         CreateMap<SubscriberDTO,RegisterDTO>().ReverseMap();
         
         CreateMap<SubscriberDTO, UserDTO>().ReverseMap();
+        CreateMap<SubscriberDTO, UserInfoDTO>().ReverseMap();
     }
 }

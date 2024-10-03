@@ -15,7 +15,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize(Roles = "Admin")]
-public class AdminController(IStatisticsService statService, IUserService userService) : ControllerBase
+public class AdminController(IStatisticsService statService, IUserService userService, IServiceUnitOfWork service) : ControllerBase
 {
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
@@ -27,8 +27,13 @@ public class AdminController(IStatisticsService statService, IUserService userSe
     {
         return Ok(await userService.GetAllUsersAsync());
     }
+    [HttpGet("user")]
+    public async Task<IActionResult> GetUsers(int id)
+    {
+        return Ok(await userService.GetUserAsync(id));
+    }
     [HttpPut("user-role")]
-    public async Task<IActionResult> ChangeUserRole()
+    public async Task<IActionResult> ChangeUserRole(int userId, UserRole userRole)
     {
         return Ok();
     }
