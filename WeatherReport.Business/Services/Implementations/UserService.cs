@@ -1,20 +1,12 @@
 using AutoMapper;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
+using WeatherReport.DataAccess.Enums;
 
 namespace WeatherReport.Business.Services.Implementations;
 
 public class UserService(IEmailService emailService, IServiceUnitOfWork service,IAuthService authService, IMapper mapper) : IUserService
 {
-    // for v2
-    public async Task<List<UserInfoDTO>> GetAllUsersAsync()
-    {
-        return mapper.Map<List<UserInfoDTO>>(await service.SubscriberService.GetAllAsync());
-    }
-    public async Task<UserInfoDTO> GetUserAsync(int id)
-    {
-        return mapper.Map<UserInfoDTO>(await service.SubscriberService.GetByIdAsync(id));
-    }
     public async Task<UserResponceDTO> LogIn(LoginDTO loginDTO)
     {
         var users = await service.SubscriberService.GetAllAsync();
@@ -118,6 +110,24 @@ public class UserService(IEmailService emailService, IServiceUnitOfWork service,
 
         user.PasswordHash = passwordHash;
         user.PasswordSalt = passwordSalt;
+
+        await service.SubscriberService.UpdateAsync(user);
+
+        return true;
+    }
+    // for v2
+    public async Task<List<UserInfoDTO>> GetAllUsersAsync()
+    {
+        return mapper.Map<List<UserInfoDTO>>(await service.SubscriberService.GetAllAsync());
+    }
+    public async Task<UserInfoDTO> GetUserAsync(int id)
+    {
+        return mapper.Map<UserInfoDTO>(await service.SubscriberService.GetByIdAsync(id));
+    }
+    public async Task<bool> UpdateRole(int id, UserRole userRole)
+    {
+        var user = await service.SubscriberService.GetByIdAsync(id);
+        user.UserRole = userRole.ToString();
 
         await service.SubscriberService.UpdateAsync(user);
 

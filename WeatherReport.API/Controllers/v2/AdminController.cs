@@ -35,6 +35,10 @@ public class AdminController(IStatisticsService statService, IUserService userSe
     [HttpPut("user-role")]
     public async Task<IActionResult> ChangeUserRole(int userId, UserRole userRole)
     {
-        return Ok();
+        if(await userService.UpdateRole(userId, userRole))
+        {
+            return Ok();
+        }
+        return BadRequest(); 
     }
 }
