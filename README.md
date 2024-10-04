@@ -1,7 +1,6 @@
 # WeatherReportApi
 
 ## Overview
-
 **WeatherReportApi** is a comprehensive weather reporting system that fetches weather data from external sources (OpenWeatherMap) and sends detailed reports via email to subscribers. The system uses Quartz.NET for scheduling jobs (daily, weekly, and hourly) and stores the weather forecasts and subscriber information in a PostgreSQL database. This API allows users to manage subscriptions, receive weather updates, and access statistics regarding subscribers and reports sent.
 
 ---
@@ -75,21 +74,24 @@ These jobs are configured using Quartz expressions set in `appsettings.json` for
 
 ## Services and Controllers
 
-### 1. **Email Service**
-This service sends fancy HTML emails to subscribers. Emails can be sent daily or weekly, and they include weather details fetched from the OpenWeatherMap API. The email body is dynamically created using the current weather data and subscriber information.
+### **1. Email Service**
+This service is responsible for sending HTML emails to subscribers. It prepares emails dynamically using the current weather data and subscriber information, ensuring that relevant updates are included.
 
-### 2. **Weather API Service**
+### **2. Weather API Service**
 This service retrieves current weather data and weekly forecasts from the OpenWeatherMap API, converting the responses into structured DTOs for further use. The API key and other relevant configurations are stored in `appsettings.json`.
 
-### 3. **Job Service**
-This service is responsible for coordinating the tasks of sending emails and saving reports to the database. It uses the email and weather services to gather data and dispatch it to subscribers.
+### **3. Job Service**
+This service coordinates the tasks of sending emails and saving reports to the database. It leverages the email and weather services to gather data and dispatch it to subscribers.
 
-### 4. **Controllers**
-   - **Forecast Controller**: Manages CRUD operations for weather forecasts.
-   - **Weather API Controller**: Fetches forecasts for a specific city.
-   - **Statistics Controller**: Returns statistical data on subscribers and sent emails.
-   - **Job Controller**: Monitors and manages Quartz jobs.
-   - **Email Controller**: Allows manual triggering of email reports.
+### **4. Controllers**
+- **Forecast Controller**: Manages CRUD operations for weather forecasts.
+- **Weather API Controller**: Fetches forecasts for specific cities.
+- **Statistics Controller**: Returns statistical data on subscribers and sent emails.
+- **Job Controller**: Monitors and manages Quartz jobs.
+- **Email Controller**: Allows manual triggering of email reports.
+- **Admin Controller**: Manages user roles and reviews statistics, allowing administrators to see all users and subscribers.
+
+*Note: The **Version 1** endpoints are deprecated and included for testing and CRUD operations only. **Version 2** focuses on application-centric features and provides a robust structure for real-world usage.*
 
 ---
 
@@ -172,14 +174,19 @@ Configuration settings are managed via `appsettings.json`, including external AP
 
 ## Usage
 
-### 1. **Weather Forecast Retrieval**
-   - Use the `/api/weather` endpoint to fetch weather data for a specific city.
-   
-### 2. **Daily and Weekly Reports**
-   - Automatically scheduled jobs will send weather reports to subscribers daily and weekly.
-   
-### 3. **View Statistics**
-   - Use the `/api/statistics` endpoint to retrieve insights on subscribers and sent reports.
+### **1. Authentication**
+- Users can authenticate to the API to manage their subscriptions and access weather data.
 
-### 4. **Manage Subscribers**
-   - Use the `/api/forecast` controller to add, update, or remove subscribers.
+### **2. User and Subscriber Management**
+- The API allows users to get their current subscriber details, change their subscription preferences, update their city for weather updates, and modify their credentials.
+
+### **3. Daily and Weekly Reports**
+- **Daily** and **weekly reports** are automatically scheduled based on user subscriptions, ensuring relevant updates are sent.
+
+### **4. Admin Panel**
+- Administrators can manage **user roles** and review statistics for all users and subscribers.
+
+### **5. View Statistics**
+- Use the `/api/v2/Admin/stats` endpoint to retrieve insights on subscribers and sent reports.
+
+> Additionally, **Version 2** includes detailed **Swagger annotations** for all endpoints, providing reliable examples and enhancing API documentation for easier integration and usage.
