@@ -1,7 +1,7 @@
 # WeatherReportApi
 
 ## Overview
-**WeatherReportApi** is a comprehensive weather reporting system that fetches weather data from external sources (OpenWeatherMap) and sends detailed reports via email to subscribers. The system uses Quartz.NET for scheduling jobs (daily, weekly, and hourly) and stores the weather forecasts and subscriber information in a PostgreSQL database. This API allows users to manage subscriptions, receive weather updates, and access statistics regarding subscribers and reports sent.
+**WeatherReportApi** is a comprehensive weather reporting system that fetches weather data from external sources (OpenWeatherMap) and sends detailed reports via email to subscribers. The system uses Quartz.NET for scheduling jobs (daily, weekly) and stores the weather forecasts and subscriber information in a PostgreSQL database. This API allows users to manage subscriptions, receive weather updates, and access statistics regarding subscribers and reports sent.
 
 ---
 
@@ -63,9 +63,9 @@ These jobs are configured using Quartz expressions set in `appsettings.json` for
 ```json
 {
   "QuartzSettings": {
-    "DailyJobCron": "0 0 8 * * ?",   // 8 AM daily
-    "WeeklyJobCron": "0 0 8 ? * MON", // 8 AM every Monday
-    "HourlyJobCron": "0 0 * * * ?"    // Every hour
+    "DailyEmailJobSchedule": "0 0 8 * * ?",
+    "WeeklyEmailJobSchedule": "0 0 8 ? * 1",
+    "HourlyReportJobSchedule": "0 0 0/1 * * ?"
   }
 }
 ```
@@ -127,18 +127,19 @@ Configuration settings are managed via `appsettings.json`, including external AP
   "ConnectionStrings": {
     "DefaultConnection": "Host=localhost;Database=WeatherDB;Username=your_user;Password=your_password"
   },
-  "ExternalAPI": {
-    "WeatherAPI": {
-      "BaseUrl": "http://api.openweathermap.org/data/2.5",
-      "ApiKey": "your_api_key",
-      "Units": "metric"
-    }
+  "ExternalApi": {
+    "WeatherApiBaseUrl": "https://api.openweathermap.org/data/2.5/",
+    "ApiModeCurrent": "weather",
+    "ApiModeForWeek": "forecast",
+    "ApiKey": "Your_api_key",
+    "Units": "metric"
   },
   "EmailSettings": {
-    "SMTPHost": "smtp.mailtrap.io",
-    "SMTPPort": 587,
-    "EnableSSL": true,
-    "FromEmail": "noreply@airwaz.com"
+    "FromEmail": "Excample@gmail.com",
+    "SmtpHost": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "SmtpUsername": "Excample@gmail.com",
+    "SmtpPassword": "Password_for_Less_secure_apps"
   }
 }
 ```
@@ -149,7 +150,7 @@ Configuration settings are managed via `appsettings.json`, including external AP
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/airwaz-report-api.git
+   git clone https://github.com/Murs000/WeatherReportApi.git
    ```
 
 2. **Update the `appsettings.json`**:
