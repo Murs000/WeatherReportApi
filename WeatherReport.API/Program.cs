@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using System.Reflection;
 using Swashbuckle.AspNetCore.Filters;
+using WeatherReport.Business.DTOs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +51,7 @@ builder.Services.AddSwaggerGen(c=>
     c.EnableAnnotations();
     c.SchemaFilter<SwaggerSchemaExampleFilter>();
 
-    // c.ExampleFilters(); // Enable example filters
+    c.ExampleFilters(); // Enable example filters
 
     // // Optional: Include XML comments if you have them for better Swagger documentation
     // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -86,6 +87,8 @@ builder.Services.AddSwaggerGen(c=>
 
     c.AddSecurityRequirement(securityRequirement);
 });
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<StatisticsDTOExample>();
 
 // Add API Versioning
 builder.Services.AddApiVersioning(options =>

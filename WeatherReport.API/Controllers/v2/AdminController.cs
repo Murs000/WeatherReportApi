@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WeatherReport.Business.DTOs;
 using WeatherReport.Business.Services.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 using System.Security.Claims;
 using AutoMapper;
 using WeatherReport.DataAccess.Enums;
@@ -18,6 +19,7 @@ public class AdminController(IStatisticsService statService, IUserService userSe
     [HttpGet("stats")]
     [SwaggerOperation(Summary = "Get system statistics", Description = "Returns various system statistics such as user activity, usage metrics, etc.")]
     [SwaggerResponse(StatusCodes.Status200OK, "Statistics retrieved successfully.", typeof(StatisticsDTO))]
+    [SwaggerResponseExample(200, typeof(StatisticsDTOExample))]
     public async Task<IActionResult> GetStats()
     {
         return Ok(await statService.GetStatisticsAsync());
