@@ -14,7 +14,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize(Roles = "Admin")]
-public class AdminController(IStatisticsService statService, IUserService userService, IServiceUnitOfWork service) : ControllerBase
+public class AdminController(IStatisticsService statService, IUserService userService) : ControllerBase
 {
     [HttpGet("stats")]
     [SwaggerOperation(Summary = "Get system statistics", Description = "Returns various system statistics such as user activity, usage metrics, etc.")]
