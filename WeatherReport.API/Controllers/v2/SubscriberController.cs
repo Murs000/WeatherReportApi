@@ -15,6 +15,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize]
+[SwaggerTag("Operations related to subscriber management and weather information.")]
 public class SubscriberController(ICustomerService service) : ControllerBase
 {
     [HttpGet("current")]

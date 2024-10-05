@@ -11,6 +11,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [AllowAnonymous]
+[SwaggerTag("Operations related to user authentication and account management.")]
 public class AuthController(IUserService userService) : ControllerBase
 {
 

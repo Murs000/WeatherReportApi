@@ -14,6 +14,7 @@ namespace WeatherReport.API.Controllers.v2;
 [ApiVersion("2.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [Authorize(Roles = "Admin")]
+[SwaggerTag("Administrative operations for managing users and application statistics.")]
 public class AdminController(IStatisticsService statService, IUserService userService) : ControllerBase
 {
     [HttpGet("stats")]
