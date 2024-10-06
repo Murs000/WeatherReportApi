@@ -2,13 +2,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 5109
 
-ENV ASPNETCORE_URLS=http://+:5109
-
 USER app
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
 COPY ["WeatherReport.API/WeatherReport.API.csproj", "WeatherReport.API/"]
+COPY ["WeatherReport.Business/WeatherReport.Business.csproj", "WeatherReport.Business/"]
+COPY ["WeatherReport.DataAccess/WeatherReport.DataAccess.csproj", "WeatherReport.DataAccess/"]
 RUN dotnet restore "WeatherReport.API/WeatherReport.API.csproj"
 COPY . .
 WORKDIR "/src/WeatherReport.API"
