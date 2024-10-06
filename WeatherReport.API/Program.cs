@@ -122,8 +122,8 @@ builder.Services.AddAppServices();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
@@ -144,7 +144,7 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<WeatherReportDb>();
     db.Database.EnsureCreated();
-}
+//}
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
