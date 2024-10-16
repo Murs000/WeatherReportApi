@@ -1,0 +1,25 @@
+services:
+  weatherreportapi:
+    image: weatherreportapi
+    container_name: WeatherReport.API
+    build:
+      context: .
+      dockerfile: WeatherReport.API/Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://+:5109 
+    ports:
+      - "5109:5109"
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    image: postgres:latest
+    container_name: WeatherReport.DB
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: WeatherDB
+    ports:
+      - "5433:5433"
+    volumes:
+      - ./containers/products-db:/var/lib/postgresql/data
