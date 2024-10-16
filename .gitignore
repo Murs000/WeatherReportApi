@@ -95,3 +95,12 @@ out/
 # Ignore build outputs
 **/bin/
 **/obj/
+
+WeatherReport.API/obj/
+WeatherReport.API/bin/
+WeatherReport.Business/obj/
+WeatherReport.Business/bin/
+WeatherReport.DataAccess/obj/
+WeatherReport.DataAccess/bin/
+
+containers/products-db
