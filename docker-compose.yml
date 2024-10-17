@@ -8,6 +8,13 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:5109
       - ConnectionStrings__DefaultConnection=Host=postgresdb;Port=5432;Database=WeatherDB;Username=myuser;Password=mypassword
+
+      # API Keys and Email Settings
+      - ExternalApi__ApiKey=88434e03b177155e26bf30fcadc1aced  # API key for external API
+      - Jwt__AccessKey=ih5GO96Tw3WQJ4pl5jMmwKAwrXfBYRbcRUwp/kqCTJU=                # GPT access key
+      - EmailSettings__FromEmail=m.mastali7@gmail.com          # From email
+      - EmailSettings__SmtpUsername=m.mastali7@gmail.com       # SMTP username
+      - EmailSettings__SmtpPassword=odjm vapt mgod dzgu        # SMTP password
     ports:
       - "5109:5109"
     depends_on:
