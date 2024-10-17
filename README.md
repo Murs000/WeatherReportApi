@@ -171,6 +171,67 @@ Configuration settings are managed via `appsettings.json`, including external AP
 4. **Access the API**:
    - Once the API is running, you can access the Swagger documentation at `http://localhost:<port>/swagger` to explore and test the endpoints.
 
+#### Steps to Set Up with Docker Compose:
+
+1. **Create a `docker-compose.yml` file**:  
+   If you haven't already, create a `docker-compose.yml` file in the root directory of your project. Here's an example of how it should look (replace the placeholder values with your own):
+   
+   ```yaml
+   version: '3.8'
+
+   services:
+     weatherreportapi:
+       image: murs000/weather_report_api:latest  # Imagine from my DockerHub
+       container_name: WeatherReport.API
+       build:
+         context: .
+         dockerfile: WeatherReport.API/Dockerfile
+       environment:
+         - ASPNETCORE_URLS=http://+:5109
+         - ConnectionStrings__DefaultConnection=Host=postgresdb;Port=5432;Database=WeatherDB;Username=myuser;Password=mysecretpassword
+
+         # API Key and Email Settings (replace with real values)
+         - ExternalApi__ApiKey=abcd1234fakeapikeyabcd5678
+         - Jwt__AccessKey=dummyjwtaccesstoken123456==
+         - EmailSettings__FromEmail=fakeemail@example.com
+         - EmailSettings__SmtpUsername=smtpuser@example.com
+         - EmailSettings__SmtpPassword=smtppassword123
+
+       ports:
+         - "5109:5109"
+       depends_on:
+         - postgresdb
+
+     postgresdb:
+       image: postgres:latest
+       container_name: WeatherReport.DB
+       environment:
+         POSTGRES_USER: myuser
+         POSTGRES_PASSWORD: mysecretpassword
+         POSTGRES_DB: WeatherDB
+       ports:
+         - "5433:5433"
+       volumes:
+         - ./containers/products-db:/var/lib/postgresql/data
+   ```
+
+1. **Run the Docker Compose Setup**:
+   Once your `docker-compose.yml` is ready, you can use the following command to build and run the containers:
+   ```bash
+   docker-compose up -d
+   ```
+   This will download the necessary images, start the PostgreSQL and API containers, and expose the services as defined in the compose file.
+
+2. **Access the API in Docker**:
+   - After the containers are running, you can access the WeatherReport API at `http://localhost:5109` and check Swagger documentation at `http://localhost:5109/swagger/index.html`.
+   - PostgreSQL will be available at `localhost:5433`.
+
+3. **Stopping the Containers**:
+   To stop and remove the containers, use:
+   ```bash
+   docker-compose down
+   ```
+
 ---
 
 ## Usage
