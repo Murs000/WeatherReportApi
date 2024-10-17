@@ -1,12 +1,13 @@
 services:
   weatherreportapi:
-    image: weatherreportapi
+    image: murs000/weather_report_api:latest
     container_name: WeatherReport.API
     build:
       context: .
       dockerfile: WeatherReport.API/Dockerfile
     environment:
-      - ASPNETCORE_URLS=http://+:5109 
+      - ASPNETCORE_URLS=http://+:5109
+      - ConnectionStrings__DefaultConnection=Host=postgresdb;Port=5432;Database=WeatherDB;Username=myuser;Password=mypassword
     ports:
       - "5109:5109"
     depends_on:
