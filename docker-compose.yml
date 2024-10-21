@@ -1,3 +1,9 @@
+version: '3.8'
+
+networks:
+  weather-app:
+    driver: bridge
+
 services:
   weatherreportapi:
     image: murs000/weather_report_api:latest
@@ -19,6 +25,8 @@ services:
       - "5109:5109"
     depends_on:
       - postgresdb
+    networks:
+      - weather-app
 
   postgresdb:
     image: postgres:latest
@@ -28,6 +36,8 @@ services:
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: WeatherDB
     ports:
-      - "5433:5433"
+      - "5433:5432"
     volumes:
       - ./containers/products-db:/var/lib/postgresql/data
+    networks:
+      - weather-app

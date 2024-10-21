@@ -210,7 +210,7 @@ Configuration settings are managed via `appsettings.json`, including external AP
          POSTGRES_PASSWORD: mysecretpassword
          POSTGRES_DB: WeatherDB
        ports:
-         - "5433:5433"
+         - "5433:5432"
        volumes:
          - ./containers/products-db:/var/lib/postgresql/data
    ```
