@@ -21,7 +21,7 @@
 ## Technologies Used
 
 - **.NET 8**
-- **PostgreSQL**
+- **PostgreSQL** (like database)
 - **Quartz.NET** (for job scheduling)
 - **AutoMapper** (for DTO mapping)
 - **OpenWeatherMap API** (for weather data)
