@@ -25,7 +25,7 @@
 - **Quartz.NET** (for job scheduling)
 - **AutoMapper** (for DTO mapping)
 - **OpenWeatherMap API** (for weather data)
-- **Swagger** (for API documentation)
+- **Swagger** (for API documentation with real excamples)
 - **Newtonsoft.Json** (for JSON handling)
 
 ---
