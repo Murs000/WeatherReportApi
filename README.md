@@ -42,7 +42,7 @@ The project follows a layered architecture with a separation of concerns, focusi
 - `Controllers/`: Handles all HTTP requests and coordinates with services.
 - `Services/`: Contains core logic for email sending, weather data fetching, and job handling.
 - `DTOs/`: Data transfer objects used to structure input/output between the layers.
-- `QuartzJobScheduler/`: Configures scheduled tasks for sending reports.
+- `Jobs/`: Configures scheduled tasks for sending reports.
 - `Middleware/`: Custom exception handling middleware.
 - `appsettings.json`: Stores configuration settings such as API keys, job schedules, and email settings.
 
